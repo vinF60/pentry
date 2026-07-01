@@ -3,14 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getApiBaseForRole, getDashboardApiKey } from "@/lib/api";
 import type { DisplayRole } from "@/lib/inboxUi";
-import type { InboxEvent } from "@/types/inbox";
+import { ErrorType, type InboxEvent } from "@/types/inbox";
 import { EventDetailModal } from "./EventDetailModal";
 import { EventsTable } from "./EventsTable";
 import { HeaderBar } from "./HeaderBar";
 import { KpiStrip } from "./KpiStrip";
 
 type SeverityFilter = "all" | "info" | "warning" | "critical";
-
 function whereFrom(ev: InboxEvent) {
   if (ev.data?.route) return `route: ${ev.data.route}`;
   if (ev.url) return `url: ${ev.url}`;
@@ -32,6 +31,7 @@ export function InboxDashboard() {
   const [selectedEvent, setSelectedEvent] = useState<InboxEvent | null>(null);
   const [roleFilter, setRoleFilter] = useState<"all" | DisplayRole>("all");
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+  const [errorType, setErrorType] = useState<ErrorType>(ErrorType.uncaught);
   const [refreshing, setRefreshing] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -196,7 +196,14 @@ export function InboxDashboard() {
         if (apiKey) headers["X-API-Key"] = apiKey;
         const qs = new URLSearchParams();
         qs.set("limit", "100");
-        if (debouncedSearch) qs.set("q", debouncedSearch);
+
+        if (debouncedSearch) {
+          qs.set("q", debouncedSearch);
+        }
+
+        if (errorType !== ErrorType.all) {
+          qs.set("type", errorType);
+        }
         // IMPORTANT: we do NOT send `environment` here.
         // The Dev/Stage/Prod tab selects which backend (and therefore which DB) we query.
         // Sending `environment` would apply additional server-side filtering and hide errors.
@@ -211,7 +218,7 @@ export function InboxDashboard() {
           total: number;
           events: InboxEvent[];
         };
-        console.log({data})
+        console.log({ data });
         setEvents(data.events);
         setMatchTotal(data.total);
         const noSearch = debouncedSearch.length === 0;
@@ -245,7 +252,7 @@ export function InboxDashboard() {
         if (!silent) setView("error");
       }
     },
-    [debouncedSearch, roleFilter],
+    [debouncedSearch, roleFilter,errorType],
   );
 
   useEffect(() => {
@@ -350,6 +357,8 @@ export function InboxDashboard() {
         roleFilter={roleFilter}
         onRoleFilter={setRoleFilter}
         onAddDemo={handleInjectDemoEvents}
+        setErrorType={setErrorType}
+        errorType={errorType}
       />
 
       <div className="mx-auto w-full max-w-[1600px] space-y-5 px-4 py-5 sm:space-y-6 sm:px-6 sm:py-6">

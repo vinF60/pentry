@@ -3,6 +3,8 @@
 import Image from "next/image";
 
 import type { DisplayRole } from "@/lib/inboxUi";
+import { useState } from "react";
+import { ErrorType } from "@/types/inbox";
 
 const ROLE_TABS: { id: "all" | DisplayRole; label: string }[] = [
   { id: "all", label: "All" },
@@ -11,10 +13,7 @@ const ROLE_TABS: { id: "all" | DisplayRole; label: string }[] = [
   { id: "prod", label: "Prod" },
 ];
 
-const TAB_ACTIVE: Record<
-  "all" | DisplayRole,
-  string
-> = {
+const TAB_ACTIVE: Record<"all" | DisplayRole, string> = {
   all: "border-[#4F46E5]/20 bg-[#4F46E5]/10 text-[#4F46E5]",
   dev: "border-[#fde68a] bg-[#fffbeb] text-[#d97706]",
   stage: "border-[#ddd6fe] bg-[#f5f3ff] text-[#7c3aed]",
@@ -28,9 +27,51 @@ type Props = {
   roleFilter: "all" | DisplayRole;
   onRoleFilter: (f: "all" | DisplayRole) => void;
   onAddDemo: () => void;
+  setErrorType: (e: ErrorType) => void;
+  errorType: ErrorType;
 };
 
-export function HeaderBar({ onRefresh, onClearAll, refreshing, roleFilter, onRoleFilter, onAddDemo }: Props) {
+const filters = [
+  { id: ErrorType.all, label: "All" },
+  { id: ErrorType.caught, label: "Caught" },
+  { id: ErrorType.uncaught, label: "Uncaught" },
+];
+
+export default function FilterSelector({
+  setErrorType,
+  errorType,
+}: {
+  setErrorType: (e: ErrorType) => void;
+  errorType: ErrorType;
+}) {
+  return (
+    <div className="flex gap-3">
+      {filters.map((filter) => (
+        <button
+          key={filter.id}
+          onClick={() => setErrorType(filter.id)}
+          className={`rounded-full border px-5 py-2 text-sm font-medium transition-all duration-200 ${
+            errorType === filter.id
+              ? "border-blue-600 bg-blue-600 text-white"
+              : "border-slate-300 bg-white text-slate-700 hover:border-blue-400 hover:bg-blue-50"
+          }`}
+        >
+          {filter.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+export function HeaderBar({
+  onRefresh,
+  onClearAll,
+  refreshing,
+  roleFilter,
+  onRoleFilter,
+  onAddDemo,
+  setErrorType,
+  errorType,
+}: Props) {
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200/60 bg-white/60 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/45">
       <div className="flex min-h-[72px] shrink-0 items-center justify-between gap-4 px-5 py-3 sm:px-8">
@@ -55,21 +96,24 @@ export function HeaderBar({ onRefresh, onClearAll, refreshing, roleFilter, onRol
               Error inbox
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[#22C55E]/25 bg-[#22C55E]/10 px-3 py-1 text-xs font-semibold text-[#166534]">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#22C55E] animate-live-dot" aria-hidden />
+              <span
+                className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#22C55E] animate-live-dot"
+                aria-hidden
+              />
               LIVE
             </span>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4">
-          <button
+          {/* <button
             type="button"
             onClick={onAddDemo}
             className="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-4 text-sm font-semibold text-[#4F46E5] shadow-sm transition duration-200 ease-in-out hover:-translate-y-px hover:bg-indigo-600 hover:text-white hover:shadow-md sm:px-5 sm:text-base"
             title="Load dummy demo events for UI testing"
           >
             Add Demo Events
-          </button>
+          </button> */}
           <button
             type="button"
             onClick={onRefresh}
@@ -77,14 +121,26 @@ export function HeaderBar({ onRefresh, onClearAll, refreshing, roleFilter, onRol
             title="Reload events"
             className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#4F46E5] px-5 text-sm font-semibold text-white shadow-sm transition duration-200 ease-in-out hover:-translate-y-px hover:bg-[#4338CA] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:bg-[#4F46E5] sm:text-base"
           >
-            <span className={`text-lg leading-none ${refreshing ? "animate-spin" : ""}`} aria-hidden>
+            <span
+              className={`text-lg leading-none ${refreshing ? "animate-spin" : ""}`}
+              aria-hidden
+            >
               ↻
             </span>
             {refreshing ? "Refreshing…" : "Refresh"}
           </button>
+          {FilterSelector({ setErrorType, errorType })}
           <button
             type="button"
-            onClick={onClearAll}
+            onClick={() => {
+              const confirmed = window.confirm(
+                "Are you sure you want to delete all events?\n\nThis action cannot be undone.",
+              );
+
+              if (confirmed) {
+                onClearAll();
+              }
+            }}
             className="h-11 rounded-lg border border-[#EF4444]/30 bg-white px-4 text-sm font-semibold text-[#EF4444] transition duration-200 ease-in-out hover:bg-[#EF4444] hover:text-white sm:px-5 sm:text-base"
           >
             Delete all
@@ -92,7 +148,10 @@ export function HeaderBar({ onRefresh, onClearAll, refreshing, roleFilter, onRol
         </div>
       </div>
 
-      <nav className="flex flex-wrap items-center gap-2 border-t border-white/40 bg-white/35 px-5 py-3 sm:px-8" aria-label="Filter by environment">
+      <nav
+        className="flex flex-wrap items-center gap-2 border-t border-white/40 bg-white/35 px-5 py-3 sm:px-8"
+        aria-label="Filter by environment"
+      >
         {ROLE_TABS.map((tab) => {
           const active = roleFilter === tab.id;
           return (

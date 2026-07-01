@@ -34,3 +34,10 @@ export type InboxEvent = {
     [key: string]: unknown;
   } | null;
 };
+
+
+export enum ErrorType {
+  all = "all",
+  caught = "caught",
+  uncaught = "uncaught",
+}

@@ -28,7 +28,7 @@ function normalizeEnv(raw: string): DisplayRole | null {
  * then source: client→dev, edge→stage, server→prod.
  */
 export function getDisplayRole(ev: InboxEvent): DisplayRole {
-  const ex = ev.extra;
+  const ex = ev.data?.extra;
   if (ex && typeof ex === "object") {
     const fromEnv = normalizeEnv(String(ex.environment ?? ex.env ?? ""));
     if (fromEnv) return fromEnv;
@@ -40,7 +40,7 @@ export function getDisplayRole(ev: InboxEvent): DisplayRole {
 
     if (ex.edge === true || String(ex.runtime || "").toLowerCase() === "edge") return "stage";
   }
-  if (ev.source === "client") return "dev";
+  if (ev.data?.source === "client") return "dev";
   return "prod";
 }
 
