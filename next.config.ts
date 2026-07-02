@@ -7,8 +7,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,       // ✅ required for static export
   },
-  basePath: "/pipex-error-system",    // ✅ your htdocs subfolder name
-  assetPrefix: "/pipex-error-system", // ✅ fixes CSS/JS loading
+  // basePath: "./",    // ✅ your htdocs subfolder name
+  // assetPrefix: "./", // ✅ fixes CSS/JS loading
 };
 
 export default nextConfig;

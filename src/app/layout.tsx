@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
-// @ts-expect-error: Allow side-effect CSS import without type declarations
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({

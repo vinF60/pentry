@@ -83,7 +83,7 @@ export function HeaderBar({
           >
             <Image
               // src="https://pipingproject.s3.ap-south-1.amazonaws.com/contactUsDevelopment/pipex-ai-logo_1775206126714.jpg"
-              src="/pipex-error-system/pipex-ai-logo.png"
+              src="/pipex-ai-logo.png"
               alt="Pipex.ai"
               fill
               className="object-contain object-left"
