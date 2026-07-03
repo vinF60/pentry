@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getApiBaseForRole, getDashboardApiKey } from "@/lib/api";
 import type { DisplayRole } from "@/lib/inboxUi";
-import { ErrorType, type InboxEvent } from "@/types/inbox";
+import { ErrorType, PaginationData, type InboxEvent } from "@/types/inbox";
 import { EventDetailModal } from "./EventDetailModal";
 import { EventsTable } from "./EventsTable";
 import { HeaderBar } from "./HeaderBar";
@@ -31,12 +31,20 @@ export function InboxDashboard() {
   const [selectedEvent, setSelectedEvent] = useState<InboxEvent | null>(null);
   const [roleFilter, setRoleFilter] = useState<"all" | DisplayRole>("all");
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
-  const [errorType, setErrorType] = useState<ErrorType>(ErrorType.uncaught);
+  const [errorType, setErrorType] = useState<ErrorType>(ErrorType.all);
   const [refreshing, setRefreshing] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [matchTotal, setMatchTotal] = useState(0);
   const loadAbortRef = useRef<AbortController | null>(null);
+
+
+
+  const [paginationData, setPaginationData] = useState<PaginationData>({
+    dataPerPage: 10,
+    offSet: 0,
+    currentPage: 1,
+  });
 
   useEffect(() => {
     const t = window.setTimeout(
@@ -195,7 +203,9 @@ export function InboxDashboard() {
         const apiKey = getDashboardApiKey();
         if (apiKey) headers["X-API-Key"] = apiKey;
         const qs = new URLSearchParams();
-        qs.set("limit", "100");
+        qs.set("limit", "10");
+        qs.set("offset", `${paginationData.offSet}`);
+
 
         if (debouncedSearch) {
           qs.set("q", debouncedSearch);
@@ -218,7 +228,6 @@ export function InboxDashboard() {
           total: number;
           events: InboxEvent[];
         };
-        console.log({ data });
         setEvents(data.events);
         setMatchTotal(data.total);
         const noSearch = debouncedSearch.length === 0;
@@ -252,7 +261,7 @@ export function InboxDashboard() {
         if (!silent) setView("error");
       }
     },
-    [debouncedSearch, roleFilter,errorType],
+    [debouncedSearch, roleFilter, errorType , paginationData],
   );
 
   useEffect(() => {
@@ -334,7 +343,7 @@ export function InboxDashboard() {
       const headers: HeadersInit = {};
       const apiKey = getDashboardApiKey();
       if (apiKey) headers["X-API-Key"] = apiKey;
-      const url = `${base.replace(/\/$/, "")}/api/events`;
+      const url = `${base.replace(/\/$/, "")}/api/events?type=${errorType}`;
       const r = await fetch(url, { method: "DELETE", headers });
       if (!r.ok) throw new Error(await r.text());
       await load({ silent: true });
@@ -424,6 +433,8 @@ export function InboxDashboard() {
                 severityFilter={severityFilter}
                 onSeverityFilter={setSeverityFilter}
                 loading={view === "loading"}
+                paginationData={paginationData}
+                setPaginationData ={setPaginationData}
               />
             )}
           </>

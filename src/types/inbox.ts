@@ -10,6 +10,7 @@ export type InboxEvent = {
   isOperational?: boolean | null;
   service?: string | null;
   occurrences?: number;
+  affectedIpCount?: number | null;
   data?: {
     source?: string;
     route?: string | null;
@@ -34,8 +35,11 @@ export type InboxEvent = {
     [key: string]: unknown;
   } | null;
 };
-
-
+ export  interface PaginationData {
+    dataPerPage: number;
+    offSet: number;
+    currentPage: number;
+  }
 export enum ErrorType {
   all = "all",
   caught = "caught",

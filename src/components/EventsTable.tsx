@@ -2,11 +2,14 @@
 
 import { Fragment, useMemo, useState } from "react";
 
-import { deriveSeverity, getDisplayRole, type DisplayRole } from "@/lib/inboxUi";
-import type { InboxEvent } from "@/types/inbox";
+import {
+  deriveSeverity,
+  getDisplayRole,
+  type DisplayRole,
+} from "@/lib/inboxUi";
+import type { InboxEvent, PaginationData } from "@/types/inbox";
 
 type SeverityFilter = "all" | "info" | "warning" | "critical";
-
 
 function SearchIcon({ className }: { className?: string }) {
   return (
@@ -28,7 +31,11 @@ function SearchIcon({ className }: { className?: string }) {
   );
 }
 
-function SeverityBadge({ severity }: { severity: "critical" | "warning" | "info" }) {
+function SeverityBadge({
+  severity,
+}: {
+  severity: "critical" | "warning" | "info";
+}) {
   const cfg: Record<
     "critical" | "warning" | "info",
     { label: string; dot: string; pill: string; text: string }
@@ -93,6 +100,8 @@ type Props = {
   severityFilter: SeverityFilter;
   onSeverityFilter: (v: SeverityFilter) => void;
   loading?: boolean;
+  paginationData: PaginationData;
+  setPaginationData: React.Dispatch<React.SetStateAction<PaginationData>>;
 };
 
 export function EventsTable({
@@ -108,6 +117,8 @@ export function EventsTable({
   severityFilter,
   onSeverityFilter,
   loading,
+  paginationData,
+  setPaginationData,
 }: Props) {
   const scopeLabel = roleFilter === "all" ? "all environments" : roleFilter;
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -116,14 +127,48 @@ export function EventsTable({
     return events.filter((e) => deriveSeverity(e) === severityFilter);
   }, [events, severityFilter]);
 
+  const totalPages = Math.ceil(allEventsCount / paginationData.dataPerPage);
+
+  const getPagination = () => {
+    const current = paginationData.currentPage;
+    const delta = 1;
+
+    const pages: (number | string)[] = [];
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= current - delta && i <= current + delta)
+      ) {
+        pages.push(i);
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("...");
+      }
+    }
+
+    return pages;
+  };
+
+  const changePage = (page: number) => {
+    setPaginationData((prev) => ({
+      ...prev,
+      currentPage: page,
+      offSet: (page - 1) * prev.dataPerPage,
+    }));
+  };
   return (
     <section className="glass w-full overflow-hidden rounded-2xl">
       <div className="flex flex-col gap-4 border-b border-gray-100 px-5 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
         <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-          <h2 className="text-base font-semibold tracking-tight text-gray-900">Events</h2>
+          <h2 className="text-base font-semibold tracking-tight text-gray-900">
+            Events
+          </h2>
           <span className="rounded-full bg-gray-100 px-2.5 py-0.5 font-mono text-xs tabular-nums text-gray-600">
             {visibleEvents.length}
-            {allEventsCount !== visibleEvents.length ? ` / ${allEventsCount.toLocaleString()}` : ""}
+            {allEventsCount !== visibleEvents.length
+              ? ` / ${allEventsCount.toLocaleString()}`
+              : ""}
           </span>
         </div>
         <div className="flex w-full flex-col gap-3 lg:max-w-2xl lg:flex-row lg:items-center lg:justify-end">
@@ -133,7 +178,9 @@ export function EventsTable({
             </label>
             <select
               value={severityFilter}
-              onChange={(e) => onSeverityFilter(e.target.value as SeverityFilter)}
+              onChange={(e) =>
+                onSeverityFilter(e.target.value as SeverityFilter)
+              }
               className="h-9 rounded-lg border border-gray-300 bg-white px-2.5 text-xs font-medium text-gray-700 shadow-sm outline-none transition duration-150 ease-in-out focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20"
             >
               <option value="all">All</option>
@@ -144,20 +191,18 @@ export function EventsTable({
           </div>
 
           <label className="relative block w-full min-w-0 lg:max-w-md">
-          <span className="sr-only">
-            Search events ({scopeLabel})
-          </span>
-          <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-gray-400" />
-          <input
-            type="search"
-            value={searchValue}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Message, route, URL, stack, user agent, JSON…"
-            autoComplete="off"
-            spellCheck={false}
-            className="h-11 w-full rounded-xl border border-white/55 bg-white/45 py-2.5 pl-11 pr-3 text-sm text-gray-900 outline-none shadow-sm transition duration-200 ease-in-out placeholder:text-gray-400 focus:border-[#4F46E5]/45 focus:bg-white/70 focus:ring-2 focus:ring-[#4F46E5]/20 backdrop-blur-xl"
-          />
-        </label>
+            <span className="sr-only">Search events ({scopeLabel})</span>
+            <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              value={searchValue}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="Message, route, URL, stack, user agent, JSON…"
+              autoComplete="off"
+              spellCheck={false}
+              className="h-11 w-full rounded-xl border border-white/55 bg-white/45 py-2.5 pl-11 pr-3 text-sm text-gray-900 outline-none shadow-sm transition duration-200 ease-in-out placeholder:text-gray-400 focus:border-[#4F46E5]/45 focus:bg-white/70 focus:ring-2 focus:ring-[#4F46E5]/20 backdrop-blur-xl"
+            />
+          </label>
         </div>
       </div>
 
@@ -171,16 +216,16 @@ export function EventsTable({
           </colgroup>
           <thead>
             <tr>
-              {["Issue", "Last Seen", "Events", ""].map(
+              {["Issue", "Last Seen", "Events", "User Count", "Actions"].map(
                 (label, i) => (
-                <th
-                  key={i}
-                  scope="col"
-                  className={`border-b border-gray-200/70 bg-white/35 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap backdrop-blur-xl ${i === 0 ? "pl-4" : ""} ${i === 2 ? "text-center" : "text-left"}`}
-                >
-                  {label}
-                </th>
-                )
+                  <th
+                    key={i}
+                    scope="col"
+                    className={`border-b border-gray-200/70 bg-white/35 px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-500 whitespace-nowrap backdrop-blur-xl ${i === 0 ? "pl-4" : ""} ${i === 2 ? "text-center" : "text-left"}`}
+                  >
+                    {label}
+                  </th>
+                ),
               )}
             </tr>
           </thead>
@@ -189,11 +234,23 @@ export function EventsTable({
               Array.from({ length: 6 }).map((_, i) => (
                 <tr key={i} className={i % 2 ? "bg-white/35" : "bg-white/15"}>
                   <td className="px-4 py-3">
-                    <div className="h-4 w-3/4 rounded bg-gray-100 mb-2" aria-hidden />
+                    <div
+                      className="h-4 w-3/4 rounded bg-gray-100 mb-2"
+                      aria-hidden
+                    />
                     <div className="flex gap-2">
-                      <div className="h-4 w-10 rounded bg-gray-100" aria-hidden />
-                      <div className="h-4 w-14 rounded bg-gray-100" aria-hidden />
-                      <div className="h-4 w-32 rounded bg-gray-100" aria-hidden />
+                      <div
+                        className="h-4 w-10 rounded bg-gray-100"
+                        aria-hidden
+                      />
+                      <div
+                        className="h-4 w-14 rounded bg-gray-100"
+                        aria-hidden
+                      />
+                      <div
+                        className="h-4 w-32 rounded bg-gray-100"
+                        aria-hidden
+                      />
                     </div>
                   </td>
                   <td className="px-3 py-3">
@@ -204,15 +261,24 @@ export function EventsTable({
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex gap-1">
-                      <div className="h-6 w-6 rounded bg-gray-100" aria-hidden />
-                      <div className="h-6 w-6 rounded bg-gray-100" aria-hidden />
+                      <div
+                        className="h-6 w-6 rounded bg-gray-100"
+                        aria-hidden
+                      />
+                      <div
+                        className="h-6 w-6 rounded bg-gray-100"
+                        aria-hidden
+                      />
                     </div>
                   </td>
                 </tr>
               ))
             ) : visibleEvents.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-14 text-center text-sm text-gray-600">
+                <td
+                  colSpan={4}
+                  className="px-6 py-14 text-center text-sm text-gray-600"
+                >
                   {hasActiveQuery
                     ? "No events match the current environment filter or search."
                     : "No events match this filter."}
@@ -224,7 +290,8 @@ export function EventsTable({
                 const severity = deriveSeverity(ev);
                 // When user selects Dev/Stage/Prod tab, force the environment tag to match the tab.
                 // This avoids relying on older log records that might be missing `extra.environment`.
-                const env = roleFilter === "all" ? getDisplayRole(ev) : roleFilter;
+                const env =
+                  roleFilter === "all" ? getDisplayRole(ev) : roleFilter;
                 const lastSeenLabel = (() => {
                   const t = Date.parse(ev.createdAt);
                   if (!Number.isFinite(t)) return "—";
@@ -239,19 +306,29 @@ export function EventsTable({
                   return "Now";
                 })();
                 const expanded = expandedId === ev._id;
-                const occ = typeof ev.occurrences === "number" && ev.occurrences > 0 ? ev.occurrences : 1;
+                const occ =
+                  typeof ev.occurrences === "number" && ev.occurrences > 0
+                    ? ev.occurrences
+                    : 1;
                 return (
                   <Fragment key={ev._id}>
                     <tr
                       className={`group cursor-pointer transition duration-150 ease-in-out hover:bg-white/55 ${
                         expanded ? "bg-white/55" : ""
                       }`}
-                      onClick={() => setExpandedId((cur) => (cur === ev._id ? null : ev._id))}
+                      onClick={() =>
+                        setExpandedId((cur) => (cur === ev._id ? null : ev._id))
+                      }
                     >
                       {/* ---- Issue (merged column) ---- */}
                       <td className="min-w-0 px-4 py-2.5 align-top">
-                        <p className="truncate text-[13px] font-medium text-gray-900" title={ev.message}>
-                          {ev.message.length > 80 ? ev.message.slice(0, 80) + "…" : ev.message}
+                        <p
+                          className="truncate text-[13px] font-medium text-gray-900"
+                          title={ev.message}
+                        >
+                          {ev.message.length > 80
+                            ? ev.message.slice(0, 80) + "…"
+                            : ev.message}
                         </p>
                         <div className="mt-1 flex flex-wrap items-center gap-1.5">
                           {ev.service && (
@@ -261,8 +338,13 @@ export function EventsTable({
                           )}
                           <EnvBadge role={env} />
                           <SeverityBadge severity={severity} />
-                          <span className="truncate font-mono text-[10px] text-gray-500" title={where}>
-                            {where.length > 40 ? where.slice(0, 40) + "…" : where}
+                          <span
+                            className="truncate font-mono text-[10px] text-gray-500"
+                            title={where}
+                          >
+                            {where.length > 40
+                              ? where.slice(0, 40) + "…"
+                              : where}
                           </span>
                         </div>
                       </td>
@@ -275,6 +357,9 @@ export function EventsTable({
                       {/* ---- Events (occ count) ---- */}
                       <td className="whitespace-nowrap px-3 py-2.5 align-middle text-center font-mono text-xs font-semibold text-gray-700">
                         {occ.toLocaleString()}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-2.5 align-middle text-center font-mono text-xs font-semibold text-gray-700">
+                        {ev.affectedIpCount || "-"}
                       </td>
 
                       {/* ---- Actions ---- */}
@@ -313,19 +398,25 @@ export function EventsTable({
                               </p>
                               <dl className="mt-2 space-y-1.5 text-sm text-gray-800">
                                 <div className="flex gap-2">
-                                  <dt className="w-20 shrink-0 text-gray-500 text-xs">Route/URL</dt>
+                                  <dt className="w-20 shrink-0 text-gray-500 text-xs">
+                                    Route/URL
+                                  </dt>
                                   <dd className="min-w-0 break-words font-mono text-[11px] text-gray-800">
                                     {ev.data?.route ?? ev.url ?? "—"}
                                   </dd>
                                 </div>
                                 <div className="flex gap-2">
-                                  <dt className="w-20 shrink-0 text-gray-500 text-xs">Source</dt>
+                                  <dt className="w-20 shrink-0 text-gray-500 text-xs">
+                                    Source
+                                  </dt>
                                   <dd className="min-w-0 break-words font-mono text-[11px] text-gray-800">
                                     {ev.data?.source || "—"}
                                   </dd>
                                 </div>
                                 <div className="flex gap-2">
-                                  <dt className="w-20 shrink-0 text-gray-500 text-xs">User agent</dt>
+                                  <dt className="w-20 shrink-0 text-gray-500 text-xs">
+                                    User agent
+                                  </dt>
                                   <dd className="min-w-0 break-words font-mono text-[11px] text-gray-800">
                                     {ev.data?.user_agent ?? "—"}
                                   </dd>
@@ -338,7 +429,11 @@ export function EventsTable({
                                 Stack / Extra
                               </p>
                               <pre className="mt-2 max-h-40 overflow-auto rounded-xl border border-white/55 bg-white/50 p-3 font-mono text-[11px] leading-relaxed text-gray-800 backdrop-blur-xl">
-                                {ev.stack ? ev.stack : ev.data?.extra ? JSON.stringify(ev.data?.extra, null, 2) : "—"}
+                                {ev.stack
+                                  ? ev.stack
+                                  : ev.data?.extra
+                                    ? JSON.stringify(ev.data?.extra, null, 2)
+                                    : "—"}
                               </pre>
                             </div>
                           </div>
@@ -351,6 +446,50 @@ export function EventsTable({
             )}
           </tbody>
         </table>
+
+        <div className="flex items-center justify-center gap-2 flex-wrap m-10">
+          {/* Previous */}
+          <button
+            onClick={() => changePage(paginationData.currentPage - 1)}
+            disabled={paginationData.currentPage === 1}
+            className="px-4 h-10 rounded-lg border border-gray-300 bg-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100"
+          >
+            ← Prev
+          </button>
+
+          {getPagination().map((item, index) =>
+            item === "..." ? (
+              <span
+                key={`dots-${index}`}
+                className="px-2 text-gray-500 font-semibold"
+              >
+                ...
+              </span>
+            ) : (
+              <button
+                key={item}
+                onClick={() => changePage(item as number)}
+                className={`w-10 h-10 rounded-lg font-medium transition-all duration-200
+          ${
+            paginationData.currentPage === item
+              ? "bg-blue-600 text-white shadow-lg scale-105"
+              : "bg-white border border-gray-300 hover:border-blue-500 hover:bg-blue-50"
+          }`}
+              >
+                {item}
+              </button>
+            ),
+          )}
+
+          {/* Next */}
+          <button
+            onClick={() => changePage(paginationData.currentPage + 1)}
+            disabled={paginationData.currentPage === totalPages}
+            className="px-4 h-10 rounded-lg border border-gray-300 bg-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100"
+          >
+            Next →
+          </button>
+        </div>
       </div>
     </section>
   );
