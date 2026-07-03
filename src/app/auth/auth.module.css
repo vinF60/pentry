@@ -1,0 +1,204 @@
+.authPageContainer {
+  background-image: url("/auth_page.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+/* Header branding area */
+.logoHeader {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.logoText {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  color: #ffffff;
+}
+
+.logoHighlight {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Semi-transparent sharp card container */
+.authFormContainer {
+  background: rgba(20, 24, 33, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0px 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0px 1px 0px rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 850px;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr; /* Splits layout into form vs visual preview */
+  overflow: hidden;
+}
+
+/* Left side form column */
+.formSection {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.75rem;
+  letter-spacing: -0.025em;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.input {
+  padding: 0.75rem 1rem;
+  background-color: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.input::placeholder {
+  color: #475569;
+}
+
+/* Footer helper links inside the form */
+.formFooterLinks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.link {
+  color: #3b82f6;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #60a5fa;
+}
+
+/* Primary modern sharp blue action button */
+.signinBtn {
+  width: 100%;
+  padding: 0.85rem;
+  background-color: #0070f3;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.signinBtn:hover {
+  background-color: #1d4ed8;
+}
+
+.signinBtn:active {
+  transform: scale(0.99);
+}
+
+/* Right side decorative dashboard preview column */
+.previewSection {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 3rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.previewCard {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 1.25rem;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.previewHeader {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.previewRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  font-size: 0.85rem;
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981; /* Green */
+}
+
+/* Responsiveness fallback for smaller desktop layouts */
+@media (max-width: 900px) {
+  .authFormContainer {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+    margin: 1.5rem;
+  }
+  .previewSection {
+    display: none;
+  }
+}
