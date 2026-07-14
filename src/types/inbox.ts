@@ -34,12 +34,20 @@ export type InboxEvent = {
     };
     [key: string]: unknown;
   } | null;
+  occurrenceDetails: {
+    occurrences: number;
+    firstSeen: string;
+    lastSeen: string;
+    spanMs: number;
+    frequencyPerDay: number;
+    frequencyPerHour: number;
+  };
 };
- export  interface PaginationData {
-    dataPerPage: number;
-    offSet: number;
-    currentPage: number;
-  }
+export interface PaginationData {
+  dataPerPage: number;
+  offSet: number;
+  currentPage: number;
+}
 export enum ErrorType {
   all = "all",
   caught = "caught",

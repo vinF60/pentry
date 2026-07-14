@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getApiBaseForRole, getDashboardApiKey } from "@/lib/api";
-import type { DisplayRole } from "@/lib/inboxUi";
+import { deriveSeverity, type DisplayRole } from "@/lib/inboxUi";
 import { ErrorType, PaginationData, type InboxEvent } from "@/types/inbox";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EventDetailModal } from "./EventDetailModal";
 import { EventsTable } from "./EventsTable";
 import { HeaderBar } from "./HeaderBar";
@@ -29,16 +30,27 @@ export function InboxDashboard() {
     "loading" | "table" | "empty" | "error" | "config"
   >("loading");
   const [selectedEvent, setSelectedEvent] = useState<InboxEvent | null>(null);
-  const [roleFilter, setRoleFilter] = useState<"all" | DisplayRole>("all");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialEnv = (searchParams?.get("env") as "dev" | DisplayRole) ?? "dev";
+  const initialError =
+    (searchParams?.get("type") as ErrorType) ?? ErrorType.all;
+  const [roleFilter, setRoleFilter] = useState<"all" | DisplayRole>(initialEnv);
+  const [errorType, setErrorType] = useState<ErrorType>(initialError);
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
-  const [errorType, setErrorType] = useState<ErrorType>(ErrorType.all);
+
+  // Sync filter state to URL query parameters
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (roleFilter) params.set("env", roleFilter as string);
+    if (errorType) params.set("type", errorType as string);
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [roleFilter, errorType, router]);
   const [refreshing, setRefreshing] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [matchTotal, setMatchTotal] = useState(0);
   const loadAbortRef = useRef<AbortController | null>(null);
-
-
 
   const [paginationData, setPaginationData] = useState<PaginationData>({
     dataPerPage: 10,
@@ -55,112 +67,7 @@ export function InboxDashboard() {
   }, [searchInput]);
 
   const handleInjectDemoEvents = useCallback(() => {
-    const demoEvents: InboxEvent[] = [
-      {
-        _id: "demo-error-1",
-        message:
-          "TypeError: Cannot read properties of undefined (reading 'split')",
-        stack: `TypeError: Cannot read properties of undefined (reading 'split')
-    at serverErrorResponse (d:\\Vin\\Custom Error Logger v2\\server\\response.js:25:20)
-    at async d:\\Vin\\Custom Error Logger v2\\server\\index.js:50:5
-    at processTicksAndRejections (node:internal/process/task_queues:95:5)
-    at async parsePayload (d:\\Vin\\Custom Error Logger v2\\server\\parser.js:12:8)
-    at async next (node_modules/express/lib/router/index.js:335:12)`,
-        url: "https://core.pipex.ai/api/v1/users/parse?id=123",
-        service: "pipex-client-service",
-        errorCode: "SERVER_ERROR_RESPONSE",
-        isOperational: false,
-        occurrences: 14,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        data: {
-          source: "server",
-          route: "/api/v1/users/parse",
-          url: "https://core.pipex.ai/api/v1/users/parse?id=123",
-          ip: "192.168.1.45",
-          user_agent:
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-          userId: "usr_9j2k1l8m",
-          query: {
-            id: "123",
-            format: "json",
-          },
-          params: {
-            userId: "123",
-          },
-          body: {
-            name: "John Doe",
-            email: "john.doe@example.com",
-            settings: {
-              theme: "dark",
-              notifications: true,
-            },
-          },
-          errorName: "TypeError",
-          extra: {
-            environment: "production",
-            service: "pipex-client-service",
-            method: "POST",
-            errorCode: "SERVER_ERROR_RESPONSE",
-            httpStatus: 500,
-            helper: "userHandler",
-            cron: "api",
-          },
-        },
-      },
-      {
-        _id: "demo-warn-2",
-        message: "MongoNetworkError: connection timed out",
-        stack: `MongoNetworkError: connection timed out
-    at connectionFailure (node_modules/mongodb/lib/cmap/connection.js:290:15)
-    at TLSSocket.<anonymous> (node_modules/mongodb/lib/cmap/connection.js:115:20)`,
-        url: null,
-        service: "pipex-database-service",
-        errorCode: "DB_TIMEOUT",
-        isOperational: true,
-        occurrences: 3,
-        createdAt: new Date(Date.now() - 300000).toISOString(),
-        updatedAt: new Date(Date.now() - 300000).toISOString(),
-        data: {
-          extra: {
-            environment: "staging",
-            service: "pipex-database-service",
-            method: "UNKNOWN",
-            errorCode: "DB_TIMEOUT",
-            httpStatus: 504,
-            helper: "dbConnector",
-            cron: "db-watchdog",
-          },
-        },
-      },
-      {
-        _id: "demo-info-3",
-        message: "User signed in successfully",
-        stack: null,
-        url: "https://backend.f10.co.in/api/v1/auth/login",
-        service: "pipex-auth-service",
-        errorCode: "SUCCESS",
-        isOperational: true,
-        occurrences: 1,
-        createdAt: new Date(Date.now() - 900000).toISOString(),
-        updatedAt: new Date(Date.now() - 900000).toISOString(),
-        data: {
-          ip: "192.168.1.100",
-          userId: "usr_abc123xyz",
-          user_agent:
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1",
-          extra: {
-            environment: "development",
-            service: "pipex-auth-service",
-            method: "POST",
-            errorCode: "SUCCESS",
-            httpStatus: 200,
-            helper: "authHandler",
-            cron: "api",
-          },
-        },
-      },
-    ];
+    const demoEvents: InboxEvent[] = [];
 
     setEvents(demoEvents);
     setMatchTotal(demoEvents.length);
@@ -205,7 +112,6 @@ export function InboxDashboard() {
         const qs = new URLSearchParams();
         qs.set("limit", "10");
         qs.set("offset", `${paginationData.offSet}`);
-
 
         if (debouncedSearch) {
           qs.set("q", debouncedSearch);
@@ -261,7 +167,7 @@ export function InboxDashboard() {
         if (!silent) setView("error");
       }
     },
-    [debouncedSearch, roleFilter, errorType , paginationData],
+    [debouncedSearch, roleFilter, errorType, paginationData],
   );
 
   useEffect(() => {
@@ -292,6 +198,22 @@ export function InboxDashboard() {
     eventsInLastHour > 0
       ? `${eventsInLastHour.toLocaleString()} in the last hour`
       : "None in the last hour";
+
+  const criticalCount = useMemo(() => {
+    return events.filter((e) => deriveSeverity(e) === "critical").length;
+  }, [events]);
+
+  const affectedUsersCount = useMemo(() => {
+    return events.reduce(
+      (sum, e) => sum + (e.affectedIpCount || (e.data?.ip ? 1 : 0)),
+      0,
+    );
+  }, [events]);
+
+  const servicesCount = useMemo(() => {
+    const unique = new Set(events.map((e) => e.service).filter(Boolean));
+    return unique.size;
+  }, [events]);
 
   const handleDelete = async (id: string) => {
     if (!confirm(`Delete event #${id}?`)) return;
@@ -374,6 +296,9 @@ export function InboxDashboard() {
         {showMain && (
           <KpiStrip
             total={matchTotal}
+            criticalCount={criticalCount}
+            affectedUsersCount={affectedUsersCount}
+            servicesCount={servicesCount}
             subline={kpiSubTotal}
             loading={view === "loading"}
           />
@@ -434,7 +359,7 @@ export function InboxDashboard() {
                 onSeverityFilter={setSeverityFilter}
                 loading={view === "loading"}
                 paginationData={paginationData}
-                setPaginationData ={setPaginationData}
+                setPaginationData={setPaginationData}
               />
             )}
           </>

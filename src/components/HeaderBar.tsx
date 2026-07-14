@@ -1,23 +1,21 @@
 "use client";
 
 import Image from "next/image";
-
 import type { DisplayRole } from "@/lib/inboxUi";
-import { useState } from "react";
 import { ErrorType } from "@/types/inbox";
 
 const ROLE_TABS: { id: "all" | DisplayRole; label: string }[] = [
-  { id: "all", label: "All" },
+  
   { id: "dev", label: "Dev" },
   { id: "stage", label: "Stage" },
   { id: "prod", label: "Prod" },
 ];
 
-const TAB_ACTIVE: Record<"all" | DisplayRole, string> = {
-  all: "border-[#4F46E5]/20 bg-[#4F46E5]/10 text-[#4F46E5]",
-  dev: "border-[#fde68a] bg-[#fffbeb] text-[#d97706]",
-  stage: "border-[#ddd6fe] bg-[#f5f3ff] text-[#7c3aed]",
-  prod: "border-[#fecaca] bg-[#fef2f2] text-[#dc2626]",
+const TAB_ACTIVE_THEMES: Record<"all" | DisplayRole, string> = {
+  all: "bg-slate-900 text-white shadow-sm ring-1 ring-slate-950/5",
+  dev: "bg-amber-500 text-white shadow-sm ring-1 ring-amber-600/10",
+  stage: "bg-purple-600 text-white shadow-sm ring-1 ring-purple-700/10",
+  prod: "bg-rose-600 text-white shadow-sm ring-1 ring-rose-700/10",
 };
 
 type Props = {
@@ -32,12 +30,12 @@ type Props = {
 };
 
 const filters = [
-  { id: ErrorType.all, label: "All" },
+  { id: ErrorType.all, label: "All Logs" },
   { id: ErrorType.caught, label: "Caught" },
   { id: ErrorType.uncaught, label: "Uncaught" },
 ];
 
-export default function FilterSelector({
+export function FilterSelector({
   setErrorType,
   errorType,
 }: {
@@ -45,23 +43,27 @@ export default function FilterSelector({
   errorType: ErrorType;
 }) {
   return (
-    <div className="flex gap-3">
-      {filters.map((filter) => (
-        <button
-          key={filter.id}
-          onClick={() => setErrorType(filter.id)}
-          className={`rounded-full border px-5 py-2 text-sm font-medium transition-all duration-200 ${
-            errorType === filter.id
-              ? "border-blue-600 bg-blue-600 text-white"
-              : "border-slate-300 bg-white text-slate-700 hover:border-blue-400 hover:bg-blue-50"
-          }`}
-        >
-          {filter.label}
-        </button>
-      ))}
+    <div className="inline-flex rounded-xl bg-slate-100 p-0.5 border border-slate-200/40">
+      {filters.map((filter) => {
+        const isActive = errorType === filter.id;
+        return (
+          <button
+            key={filter.id}
+            onClick={() => setErrorType(filter.id)}
+            className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 ${
+              isActive
+                ? "bg-white text-slate-800 shadow-sm"
+                : "text-slate-500 hover:text-slate-800"
+            }`}
+          >
+            {filter.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
+
 export function HeaderBar({
   onRefresh,
   onClearAll,
@@ -73,103 +75,106 @@ export function HeaderBar({
   errorType,
 }: Props) {
   return (
-    <header className="sticky top-0 z-40 border-b border-gray-200/60 bg-white/60 backdrop-blur-2xl supports-[backdrop-filter]:bg-white/45">
-      <div className="flex min-h-[72px] shrink-0 items-center justify-between gap-4 px-5 py-3 sm:px-8">
-        <div className="flex min-w-0 items-center gap-4">
-          <h1 className="sr-only">PipexAI — Error inbox</h1>
-          <div
-            className="relative h-11 w-[min(220px,54vw)] shrink-0 scale-105 sm:h-[3.25rem] sm:w-[260px]"
-            style={{ filter: "drop-shadow(0 1px 2px rgba(59,130,246,0.3))" }}
-          >
-            <Image
-              // src="https://pipingproject.s3.ap-south-1.amazonaws.com/contactUsDevelopment/pipex-ai-logo_1775206126714.jpg"
-              src="/pipex-ai-logo.png"
-              alt="Pipex.ai"
-              fill
-              className="object-contain object-left"
-              sizes="(max-width: 640px) 54vw, 260px"
-              priority
-            />
-          </div>
-          <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
-            <span className="shrink-0 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-              Error inbox
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#22C55E]/25 bg-[#22C55E]/10 px-3 py-1 text-xs font-semibold text-[#166534]">
-              <span
-                className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#22C55E] animate-live-dot"
-                aria-hidden
+    <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-white/70 backdrop-blur-2xl">
+      <div className="mx-auto max-w-[1600px] px-4 sm:px-6">
+        <div className="flex min-h-[72px] items-center justify-between gap-4 py-3">
+          {/* Logo & Brand Section */}
+          <div className="flex min-w-0 items-center gap-4">
+            <h1 className="sr-only">PipexAI — Error Inbox</h1>
+            <div
+              className="relative h-10 w-[180px] shrink-0 sm:h-12 sm:w-[220px]"
+            >
+              <Image
+                src="/pipex-ai-logo.png"
+                alt="Pipex.ai Logo"
+                fill
+                className="object-contain object-left"
+                sizes="(max-width: 640px) 180px, 220px"
+                priority
               />
-              LIVE
-            </span>
+            </div>
+            <div className="hidden md:flex items-center gap-2">
+              <span className="h-4 w-px bg-slate-200" />
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                Pentry Collector
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
+                <span
+                  className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-live-dot"
+                  aria-hidden
+                />
+                LIVE INBOX
+              </span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center justify-end gap-2.5 sm:gap-3">
+            
+
+            {/* Refresh Button */}
+            <button
+              type="button"
+              onClick={onRefresh}
+              disabled={refreshing}
+              title="Fetch latest logged errors"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 active:scale-95"
+            >
+              <span
+                className={`text-sm ${refreshing ? "animate-spin" : ""}`}
+                aria-hidden
+              >
+                ↻
+              </span>
+              <span>{refreshing ? "Refreshing…" : "Refresh"}</span>
+            </button>
+
+            {/* Error Type Segment Filter */}
+            <FilterSelector setErrorType={setErrorType} errorType={errorType} />
+
+            {/* Dangerous action - Clear All */}
+            <button
+              type="button"
+              onClick={() => {
+                const confirmed = window.confirm(
+                  "Are you sure you want to delete all errors from the database?\n\nThis action cannot be undone.",
+                );
+                if (confirmed) {
+                  onClearAll();
+                }
+              }}
+              className="inline-flex h-9 items-center justify-center rounded-xl border border-rose-200 bg-white px-3.5 text-xs font-bold text-rose-600 transition hover:bg-rose-500 hover:text-white hover:border-rose-500 active:scale-95"
+              title="Delete all logged events"
+            >
+              Clear DB
+            </button>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4">
-          {/* <button
-            type="button"
-            onClick={onAddDemo}
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-4 text-sm font-semibold text-[#4F46E5] shadow-sm transition duration-200 ease-in-out hover:-translate-y-px hover:bg-indigo-600 hover:text-white hover:shadow-md sm:px-5 sm:text-base"
-            title="Load dummy demo events for UI testing"
-          >
-            Add Demo Events
-          </button> */}
-          <button
-            type="button"
-            onClick={onRefresh}
-            disabled={refreshing}
-            title="Reload events"
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-[#4F46E5] px-5 text-sm font-semibold text-white shadow-sm transition duration-200 ease-in-out hover:-translate-y-px hover:bg-[#4338CA] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:bg-[#4F46E5] sm:text-base"
-          >
-            <span
-              className={`text-lg leading-none ${refreshing ? "animate-spin" : ""}`}
-              aria-hidden
-            >
-              ↻
-            </span>
-            {refreshing ? "Refreshing…" : "Refresh"}
-          </button>
-          {FilterSelector({ setErrorType, errorType })}
-          <button
-            type="button"
-            onClick={() => {
-              const confirmed = window.confirm(
-                "Are you sure you want to delete all events?\n\nThis action cannot be undone.",
-              );
-
-              if (confirmed) {
-                onClearAll();
-              }
-            }}
-            className="h-11 rounded-lg border border-[#EF4444]/30 bg-white px-4 text-sm font-semibold text-[#EF4444] transition duration-200 ease-in-out hover:bg-[#EF4444] hover:text-white sm:px-5 sm:text-base"
-          >
-            Delete all
-          </button>
-        </div>
+        {/* Environment Filter Sub-navigation */}
+        <nav
+          className="flex flex-wrap items-center gap-1.5 border-t border-slate-100 py-3"
+          aria-label="Filter events by cloud environment"
+        >
+          {ROLE_TABS.map((tab) => {
+            const active = roleFilter === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => onRoleFilter(tab.id)}
+                className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition duration-150 ease-in-out ${
+                  active
+                    ? TAB_ACTIVE_THEMES[tab.id]
+                    : "text-slate-500 hover:bg-slate-100/70 hover:text-slate-800"
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
       </div>
-
-      <nav
-        className="flex flex-wrap items-center gap-2 border-t border-white/40 bg-white/35 px-5 py-3 sm:px-8"
-        aria-label="Filter by environment"
-      >
-        {ROLE_TABS.map((tab) => {
-          const active = roleFilter === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => onRoleFilter(tab.id)}
-              className={`rounded-lg border px-4 py-2 text-sm font-semibold transition sm:px-5 sm:text-base ${
-                active
-                  ? TAB_ACTIVE[tab.id]
-                  : "border-transparent text-gray-600 hover:border-gray-200 hover:bg-white/70"
-              } duration-200 ease-in-out`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </nav>
     </header>
   );
 }

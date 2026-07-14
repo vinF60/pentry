@@ -1,13 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  distDir: "dist",           // ✅ build output folder named 'dist'
   trailingSlash: true,
+  productionBrowserSourceMaps: true,
   images: {
-    unoptimized: true,       // ✅ required for static export
+    unoptimized: true,
   },
-  // basePath: "./",    // ✅ your htdocs subfolder name
-  // assetPrefix: "./", // ✅ fixes CSS/JS loading
+  output: "export",
 };
 
 export default nextConfig;
