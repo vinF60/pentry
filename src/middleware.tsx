@@ -30,6 +30,8 @@ export async function middleware(request: NextRequest) {
   const passwordCookie = request.cookies.get("password")?.value;
   const emailHash = shuffleString(process.env.NEXT_PUBLIC_API_EMAIL!);
   const passwordHash = shuffleString(process.env.NEXT_PUBLIC_API_PASSWORD!);
+  console.log(emailHash, "hsss");
+  console.log(emailCookie, "emailCookie");
   const isAuthenticated =
     emailCookie === emailHash && passwordCookie === passwordHash;
   if (!isAuthenticated &&  !pathname.startsWith("/auth")) {
