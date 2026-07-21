@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: var(--font-plus-jakarta, ui-sans-serif, system-ui, sans-serif);
   --font-mono: var(--font-jetbrains, ui-monospace, monospace);
 }
 
+/* ============================================================
+   LIGHT MODE (default)
+   ============================================================ */
 body {
   background-color: #f6f8fc;
   background-image: 
@@ -16,9 +21,27 @@ body {
   background-attachment: fixed;
   color: #0f172a;
   font-size: 15px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Glass surfaces (use on cards / sticky header) */
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+.dark body {
+  background-color: #0a0f1e;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.18) 0px, transparent 45%),
+    radial-gradient(at 50% 10%, rgba(168, 85, 247, 0.10) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 45%),
+    radial-gradient(at 80% 80%, rgba(244, 63, 94, 0.06) 0px, transparent 40%),
+    radial-gradient(at 20% 80%, rgba(16, 185, 129, 0.05) 0px, transparent 40%);
+  background-attachment: fixed;
+  color: #e2e8f0;
+}
+
+/* ============================================================
+   GLASS SURFACES
+   ============================================================ */
 .glass {
   background: rgba(255, 255, 255, 0.65);
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -28,6 +51,16 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark .glass {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.2), 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .glass-strong {
@@ -39,11 +72,29 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   -webkit-backdrop-filter: blur(24px);
   backdrop-filter: blur(24px);
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+.dark .glass-strong {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.25), 
+    0 12px 36px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ============================================================
+   SELECTION & FOCUS
+   ============================================================ */
 ::selection {
   background: rgba(79, 70, 229, 0.2);
   color: #4F46E5;
+}
+
+.dark ::selection {
+  background: rgba(99, 102, 241, 0.35);
+  color: #a5b4fc;
 }
 
 :focus-visible {
@@ -57,9 +108,11 @@ body {
   }
 }
 
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
 @keyframes live-dot-pulse {
-  0%,
-  100% {
+  0%, 100% {
     opacity: 1;
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5);
@@ -72,8 +125,7 @@ body {
 }
 
 @keyframes severity-critical-glow {
-  0%,
-  100% {
+  0%, 100% {
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45);
   }
   50% {
@@ -82,8 +134,7 @@ body {
 }
 
 @keyframes severity-warning-pulse {
-  0%,
-  100% {
+  0%, 100% {
     opacity: 1;
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
@@ -96,8 +147,7 @@ body {
 }
 
 @keyframes severity-info-pulse {
-  0%,
-  100% {
+  0%, 100% {
     opacity: 1;
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
@@ -109,7 +159,6 @@ body {
   }
 }
 
-/* Plain classes */
 .animate-live-dot {
   animation: live-dot-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -126,7 +175,9 @@ body {
   animation: severity-info-pulse 2.5s ease-in-out infinite;
 }
 
-/* Custom Scrollbar for Pre tags and modals */
+/* ============================================================
+   CUSTOM SCROLLBAR
+   ============================================================ */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -145,3 +196,23 @@ body {
   background: rgba(148, 163, 184, 0.55);
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.65);
+}
+
+/* ============================================================
+   DIALOG / MODAL BACKDROP
+   ============================================================ */
+dialog::backdrop {
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
+}
+
+.dark dialog::backdrop {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+}

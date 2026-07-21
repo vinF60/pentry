@@ -230,22 +230,22 @@ export function EventDetailModal({ event, onClose }: Props) {
     { bg: string; border: string; badge: string; text: string }
   > = {
     info: {
-      bg: "bg-blue-50/80",
-      border: "border-blue-100",
-      badge: "bg-blue-50 border-blue-200 text-blue-700",
-      text: "text-blue-900",
+      bg: "bg-blue-50/80 dark:bg-blue-950/40",
+      border: "border-blue-100 dark:border-blue-900/60",
+      badge: "bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400",
+      text: "text-blue-900 dark:text-blue-200",
     },
     warning: {
-      bg: "bg-amber-50/80",
-      border: "border-amber-100",
-      badge: "bg-amber-50 border-amber-200 text-amber-800",
-      text: "text-amber-950",
+      bg: "bg-amber-50/80 dark:bg-amber-950/40",
+      border: "border-amber-100 dark:border-amber-900/60",
+      badge: "bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-400",
+      text: "text-amber-950 dark:text-amber-200",
     },
     critical: {
-      bg: "bg-rose-50/80",
-      border: "border-rose-100",
-      badge: "bg-rose-50 border-rose-200 text-rose-700",
-      text: "text-rose-950",
+      bg: "bg-rose-50/80 dark:bg-rose-950/40",
+      border: "border-rose-100 dark:border-rose-900/60",
+      badge: "bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400",
+      text: "text-rose-950 dark:text-rose-200",
     },
   };
 
