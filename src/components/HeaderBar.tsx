@@ -85,7 +85,7 @@ export function HeaderBar({
               className="relative h-10 w-[180px] shrink-0 sm:h-12 sm:w-[220px]"
             >
               <Image
-                src="/pipex-ai-logo.png"
+                src="/logo.png"
                 alt="Pipex.ai Logo"
                 fill
                 className="object-contain object-left"
