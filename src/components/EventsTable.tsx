@@ -290,8 +290,8 @@ export function EventsTable({
                       {/* Issue Details */}
                       <td className="min-w-0 pl-6 pr-3 align-top">
                         <div className="flex flex-col gap-1.5">
-                          <div className="flex items-start gap-2">
-                            <p className="text-sm font-semibold text-slate-800 group-hover:text-[#4F46E5] transition-colors leading-snug whitespace-nowrap truncate" title={rawMessage}>
+                          <div className="flex items-start gap-2 min-w-0">
+                            <p className="text-sm font-semibold text-slate-800 group-hover:text-[#4F46E5] transition-colors leading-snug whitespace-nowrap truncate w-full" title={rawMessage}>
                               {displayMsg}
                             </p>
                           </div>

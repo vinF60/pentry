@@ -32,8 +32,15 @@ function parseStack(stackStr: string): StackFrame[] {
     // Regex 1: with parentheses e.g. "at serverErrorResponse (d:\Vin\Custom Error Logger v2\server\response.js:25:20)"
     const parenMatch = trimmed.match(/^at\s+(?:async\s+)?([^\s(]+)\s+\((.+):(\d+):(\d+)\)$/);
     if (parenMatch) {
-      const [, funcName, filePath, lineNo, colNo] = parenMatch;
+      const [, rawFuncName, filePath, lineNo, colNo] = parenMatch;
       const isApp = isAppFrame(filePath);
+      let funcName = rawFuncName;
+      if (funcName === "Object.<anonymous>" || funcName === "anonymous" || funcName === "(anonymous)") {
+        const fileName = filePath.split(/[/\\]/).pop();
+        if (fileName) {
+          funcName = fileName;
+        }
+      }
       frames.push({
         raw: trimmed,
         isApp,
@@ -50,10 +57,11 @@ function parseStack(stackStr: string): StackFrame[] {
     if (noParenMatch) {
       const [, filePath, lineNo, colNo] = noParenMatch;
       const isApp = isAppFrame(filePath);
+      const fileName = filePath.split(/[/\\]/).pop();
       frames.push({
         raw: trimmed,
         isApp,
-        functionName: "anonymous",
+        functionName: fileName || "(anonymous)",
         file: filePath,
         line: parseInt(lineNo, 10),
         col: parseInt(colNo, 10),
@@ -64,7 +72,15 @@ function parseStack(stackStr: string): StackFrame[] {
     // If it's a native frame
     const nativeMatch = trimmed.match(/^at\s+(.+)\s+\((<anonymous>|native)\)$/);
     if (nativeMatch) {
-      const [, funcName, file] = nativeMatch;
+      const [, rawFuncName, file] = nativeMatch;
+      let funcName = rawFuncName;
+      if (funcName === "Object.<anonymous>" || funcName === "anonymous" || funcName === "(anonymous)") {
+        if (file && file !== "<anonymous>") {
+          funcName = file;
+        } else {
+          funcName = "(anonymous)";
+        }
+      }
       frames.push({
         raw: trimmed,
         isApp: false,
