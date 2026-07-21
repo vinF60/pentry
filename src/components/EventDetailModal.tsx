@@ -557,6 +557,63 @@ export function EventDetailModal({ event, onClose }: Props) {
                 </dl>
               </div>
 
+              {/* Metrics & Occurrences */}
+              <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
+                  Metrics & Occurrences
+                </h4>
+                <div className="grid gap-4 grid-cols-2 md:grid-cols-4 text-xs">
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Total Occurrences</dt>
+                    <dd className="mt-1 font-mono font-semibold text-slate-800 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrences ?? event.occurrenceDetails?.occurrences ?? 1}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">First Seen</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrenceDetails?.firstSeen ? new Date(event.occurrenceDetails.firstSeen).toLocaleString() : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Last Seen</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrenceDetails?.lastSeen ? new Date(event.occurrenceDetails.lastSeen).toLocaleString() : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Span (Duration)</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrenceDetails?.spanMs ? `${(event.occurrenceDetails.spanMs / 1000).toFixed(1)}s` : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Frequency (Day / Hour)</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrenceDetails?.frequencyPerDay !== undefined ? `${event.occurrenceDetails.frequencyPerDay.toFixed(2)}/d` : "—"} · {event.occurrenceDetails?.frequencyPerHour !== undefined ? `${event.occurrenceDetails.frequencyPerHour.toFixed(2)}/h` : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Affected IPs</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.affectedIpCount ?? "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Affected URLs</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.affectedUrlCount ?? "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Multi-User Event</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.multiUser !== undefined ? (event.multiUser ? "Yes" : "No") : "—"}
+                    </dd>
+                  </div>
+                </div>
+              </div>
+
               {/* User Agent */}
               <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
                 <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
