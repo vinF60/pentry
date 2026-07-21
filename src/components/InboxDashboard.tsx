@@ -13,6 +13,68 @@ import { KpiStrip } from "./KpiStrip";
 type SeverityFilter = "all" | "info" | "warning" | "critical";
 function whereFrom(ev: InboxEvent) {
   if (ev.data?.route) return `route: ${ev.data.route}`;
+
+  if (ev.stack) {
+    const lines = ev.stack.split("\n");
+    // Look for first app frame
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("at ")) continue;
+
+      const parenMatch = trimmed.match(/^at\s+(?:async\s+)?([^\s(]+)\s+\((.+):(\d+):(\d+)\)$/);
+      if (parenMatch) {
+        const [, , filePath, lineNo] = parenMatch;
+        const isApp = !(
+          filePath.includes("node_modules") ||
+          filePath.includes("node:") ||
+          filePath.includes("next/dist") ||
+          filePath.includes("webpack:") ||
+          filePath.includes("<anonymous>")
+        );
+        if (isApp) {
+          const fileName = filePath.split(/[/\\]/).pop();
+          return `${fileName}:${lineNo}`;
+        }
+      }
+
+      const noParenMatch = trimmed.match(/^at\s+(?:async\s+)?(.+):(\d+):(\d+)$/);
+      if (noParenMatch) {
+        const [, filePath, lineNo] = noParenMatch;
+        const isApp = !(
+          filePath.includes("node_modules") ||
+          filePath.includes("node:") ||
+          filePath.includes("next/dist") ||
+          filePath.includes("webpack:") ||
+          filePath.includes("<anonymous>")
+        );
+        if (isApp) {
+          const fileName = filePath.split(/[/\\]/).pop();
+          return `${fileName}:${lineNo}`;
+        }
+      }
+    }
+
+    // If no app frame, fallback to first frame overall
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith("at ")) continue;
+
+      const parenMatch = trimmed.match(/^at\s+(?:async\s+)?([^\s(]+)\s+\((.+):(\d+):(\d+)\)$/);
+      if (parenMatch) {
+        const [, , filePath, lineNo] = parenMatch;
+        const fileName = filePath.split(/[/\\]/).pop();
+        return `${fileName}:${lineNo}`;
+      }
+
+      const noParenMatch = trimmed.match(/^at\s+(?:async\s+)?(.+):(\d+):(\d+)$/);
+      if (noParenMatch) {
+        const [, filePath, lineNo] = noParenMatch;
+        const fileName = filePath.split(/[/\\]/).pop();
+        return `${fileName}:${lineNo}`;
+      }
+    }
+  }
+
   if (ev.url) return `url: ${ev.url}`;
   return "—";
 }
