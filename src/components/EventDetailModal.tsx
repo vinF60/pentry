@@ -230,22 +230,22 @@ export function EventDetailModal({ event, onClose }: Props) {
     { bg: string; border: string; badge: string; text: string }
   > = {
     info: {
-      bg: "bg-blue-50/80",
-      border: "border-blue-100",
-      badge: "bg-blue-50 border-blue-200 text-blue-700",
-      text: "text-blue-900",
+      bg: "bg-blue-50/80 dark:bg-blue-950/40",
+      border: "border-blue-100 dark:border-blue-900/60",
+      badge: "bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400",
+      text: "text-blue-900 dark:text-blue-200",
     },
     warning: {
-      bg: "bg-amber-50/80",
-      border: "border-amber-100",
-      badge: "bg-amber-50 border-amber-200 text-amber-800",
-      text: "text-amber-950",
+      bg: "bg-amber-50/80 dark:bg-amber-950/40",
+      border: "border-amber-100 dark:border-amber-900/60",
+      badge: "bg-amber-50 dark:bg-amber-950/60 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-400",
+      text: "text-amber-950 dark:text-amber-200",
     },
     critical: {
-      bg: "bg-rose-50/80",
-      border: "border-rose-100",
-      badge: "bg-rose-50 border-rose-200 text-rose-700",
-      text: "text-rose-950",
+      bg: "bg-rose-50/80 dark:bg-rose-950/40",
+      border: "border-rose-100 dark:border-rose-900/60",
+      badge: "bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-400",
+      text: "text-rose-950 dark:text-rose-200",
     },
   };
 
@@ -555,6 +555,63 @@ export function EventDetailModal({ event, onClose }: Props) {
                     </dd>
                   </div>
                 </dl>
+              </div>
+
+              {/* Metrics & Occurrences */}
+              <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
+                  Metrics & Occurrences
+                </h4>
+                <div className="grid gap-4 grid-cols-2 md:grid-cols-4 text-xs">
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Total Occurrences</dt>
+                    <dd className="mt-1 font-mono font-semibold text-slate-800 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrences ?? event.occurrenceDetails?.occurrences ?? 1}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">First Seen</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrenceDetails?.firstSeen ? new Date(event.occurrenceDetails.firstSeen).toLocaleString() : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Last Seen</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrenceDetails?.lastSeen ? new Date(event.occurrenceDetails.lastSeen).toLocaleString() : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Span (Duration)</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrenceDetails?.spanMs ? `${(event.occurrenceDetails.spanMs / 1000).toFixed(1)}s` : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Frequency (Day / Hour)</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.occurrenceDetails?.frequencyPerDay !== undefined ? `${event.occurrenceDetails.frequencyPerDay.toFixed(2)}/d` : "—"} · {event.occurrenceDetails?.frequencyPerHour !== undefined ? `${event.occurrenceDetails.frequencyPerHour.toFixed(2)}/h` : "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Affected IPs</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.affectedIpCount ?? "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Affected URLs</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.affectedUrlCount ?? "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Multi-User Event</dt>
+                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                      {event.multiUser !== undefined ? (event.multiUser ? "Yes" : "No") : "—"}
+                    </dd>
+                  </div>
+                </div>
               </div>
 
               {/* User Agent */}

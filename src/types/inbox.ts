@@ -11,6 +11,8 @@ export type InboxEvent = {
   service?: string | null;
   occurrences?: number;
   affectedIpCount?: number | null;
+  affectedUrlCount?: number | null;
+  multiUser?: boolean | null;
   data?: {
     source?: string;
     route?: string | null;
