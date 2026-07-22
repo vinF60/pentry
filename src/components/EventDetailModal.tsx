@@ -254,7 +254,7 @@ export function EventDetailModal({ event, onClose }: Props) {
   return (
     <dialog
       ref={ref}
-      className="fixed inset-0 z-50 m-auto max-h-[min(94vh,94%)] w-[min(96vw,56rem)] overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50 p-0 text-slate-800 shadow-2xl backdrop:bg-slate-900/35 backdrop:backdrop-blur-md animate-in fade-in zoom-in-95 duration-200"
+      className="fixed inset-0 z-50 m-auto max-h-[min(94vh,94%)] w-[min(96vw,56rem)] overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-900 p-0 text-slate-800 dark:text-slate-200 shadow-2xl backdrop:bg-slate-900/35 dark:backdrop:bg-black/60 backdrop:backdrop-blur-md animate-in fade-in zoom-in-95 duration-200"
       onClose={onClose}
       onCancel={(e) => {
         e.preventDefault();
@@ -265,11 +265,11 @@ export function EventDetailModal({ event, onClose }: Props) {
       }}
       aria-labelledby="event-detail-title"
     >
-      <div className="flex h-[min(94vh,48rem)] flex-col bg-slate-50">
+      <div className="flex h-[min(94vh,48rem)] flex-col bg-slate-50 dark:bg-slate-900">
         {/* --- MODAL HEADER --- */}
-        <header className="flex shrink-0 items-center justify-between border-b border-slate-200/60 bg-white px-6 py-4">
+        <header className="flex shrink-0 items-center justify-between border-b border-slate-200/60 dark:border-slate-800 bg-white dark:bg-slate-950 px-6 py-4">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 id="event-detail-title" className="text-base font-extrabold text-slate-800">
+            <h2 id="event-detail-title" className="text-base font-extrabold text-slate-800 dark:text-slate-100">
               Logged Event Diagnostics
             </h2>
             <div className="flex items-center gap-1.5">
@@ -277,14 +277,14 @@ export function EventDetailModal({ event, onClose }: Props) {
                 {severity}
               </span>
               {event.service && (
-                <span className="inline-flex rounded border border-slate-200 bg-slate-100/50 px-2 py-0.5 font-mono text-[9px] font-bold text-slate-600">
+                <span className="inline-flex rounded border border-slate-200 dark:border-slate-800 bg-slate-100/50 dark:bg-slate-900/50 px-2 py-0.5 font-mono text-[9px] font-bold text-slate-600 dark:text-slate-400">
                   {event.service}
                 </span>
               )}
               <span className={`inline-flex rounded border px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider ${
-                environment === "dev" ? "border-amber-200 bg-amber-50 text-amber-700" :
-                environment === "stage" ? "border-purple-200 bg-purple-50 text-purple-700" :
-                "border-rose-200 bg-rose-50 text-rose-700"
+                environment === "dev" ? "border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400" :
+                environment === "stage" ? "border-purple-200 dark:border-purple-800/60 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400" :
+                "border-rose-200 dark:border-rose-800/60 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400"
               }`}>
                 {environment}
               </span>
@@ -293,7 +293,7 @@ export function EventDetailModal({ event, onClose }: Props) {
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-lg leading-none text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 active:scale-90"
+            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 text-lg leading-none text-slate-400 dark:text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-700 dark:hover:text-slate-200 active:scale-90"
             aria-label="Close"
           >
             ×
@@ -301,36 +301,36 @@ export function EventDetailModal({ event, onClose }: Props) {
         </header>
 
         {/* --- ERROR MESSAGE BANNER --- */}
-        <div className="shrink-0 border-b border-slate-200/40 bg-white p-5">
+        <div className="shrink-0 border-b border-slate-200/40 dark:border-slate-800 bg-white dark:bg-slate-950 p-5">
           <div className={`flex flex-col gap-3 rounded-xl border ${cStyle.border} ${cStyle.bg} p-4 sm:flex-row sm:items-start sm:justify-between`}>
             <div className="min-w-0 flex-1">
               {requestContext.errorName && (
-                <span className="font-mono text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <span className="font-mono text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   {requestContext.errorName}
                 </span>
               )}
               <h3 className={`mt-0.5 text-sm font-bold leading-relaxed break-all ${cStyle.text}`}>
                 {event.message}
               </h3>
-              <div className="mt-2.5 flex flex-wrap items-center gap-2 font-mono text-[10px] text-slate-400 font-semibold">
+              <div className="mt-2.5 flex flex-wrap items-center gap-2 font-mono text-[10px] text-slate-400 dark:text-slate-500 font-semibold">
                 <span>Logged: {new Date(event.createdAt).toLocaleString()}</span>
                 {occurrencesCount > 1 && (
                   <>
-                    <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                    <span className="text-slate-500">{occurrencesCount} total occurrences</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                    <span className="text-slate-500 dark:text-slate-400">{occurrencesCount} total occurrences</span>
                   </>
                 )}
               </div>
             </div>
             <button
               onClick={() => copyToClipboard(event.message, "banner-msg")}
-              className="mt-1 shrink-0 inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
+              className="mt-1 shrink-0 inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 text-xs font-semibold text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100"
               title="Copy error message to clipboard"
             >
               {copiedId === "banner-msg" ? (
                 <>
-                  <CheckIcon className="text-emerald-600" />
-                  <span className="text-emerald-700">Copied</span>
+                  <CheckIcon className="text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-emerald-700 dark:text-emerald-400">Copied</span>
                 </>
               ) : (
                 <>
@@ -343,7 +343,7 @@ export function EventDetailModal({ event, onClose }: Props) {
         </div>
 
         {/* --- TABS --- */}
-        <div className="shrink-0 bg-white border-b border-slate-200">
+        <div className="shrink-0 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
           <nav className="flex px-6 gap-1" aria-label="Modal navigation tabs">
             {hasStack && (
               <button
@@ -351,8 +351,8 @@ export function EventDetailModal({ event, onClose }: Props) {
                 onClick={() => setActiveTab("stack")}
                 className={`border-b-2 px-4 py-3 text-xs font-bold tracking-wide transition ${
                   activeTab === "stack"
-                    ? "border-[#4F46E5] text-[#4F46E5]"
-                    : "border-transparent text-slate-400 hover:text-slate-700"
+                    ? "border-[#4F46E5] dark:border-indigo-500 text-[#4F46E5] dark:text-indigo-400"
+                    : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
               >
                 Stack Trace
@@ -363,8 +363,8 @@ export function EventDetailModal({ event, onClose }: Props) {
               onClick={() => setActiveTab("http")}
               className={`border-b-2 px-4 py-3 text-xs font-bold tracking-wide transition ${
                 activeTab === "http"
-                  ? "border-[#4F46E5] text-[#4F46E5]"
-                  : "border-transparent text-slate-400 hover:text-slate-700"
+                  ? "border-[#4F46E5] dark:border-indigo-500 text-[#4F46E5] dark:text-indigo-400"
+                  : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
               }`}
             >
               HTTP & Environment Context
@@ -374,8 +374,8 @@ export function EventDetailModal({ event, onClose }: Props) {
               onClick={() => setActiveTab("payloads")}
               className={`border-b-2 px-4 py-3 text-xs font-bold tracking-wide transition ${
                 activeTab === "payloads"
-                  ? "border-[#4F46E5] text-[#4F46E5]"
-                  : "border-transparent text-slate-400 hover:text-slate-700"
+                  ? "border-[#4F46E5] dark:border-indigo-500 text-[#4F46E5] dark:text-indigo-400"
+                  : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
               }`}
             >
               Payloads
@@ -385,8 +385,8 @@ export function EventDetailModal({ event, onClose }: Props) {
               onClick={() => setActiveTab("raw")}
               className={`border-b-2 px-4 py-3 text-xs font-bold tracking-wide transition ${
                 activeTab === "raw"
-                  ? "border-[#4F46E5] text-[#4F46E5]"
-                  : "border-transparent text-slate-400 hover:text-slate-700"
+                  ? "border-[#4F46E5] dark:border-indigo-500 text-[#4F46E5] dark:text-indigo-400"
+                  : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
               }`}
             >
               Raw Event
@@ -399,10 +399,10 @@ export function EventDetailModal({ event, onClose }: Props) {
           {/* 1. STACK TRACE TAB */}
           {activeTab === "stack" && hasStack && (
             <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-3 shadow-sm">
                 <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[#4F46E5] animate-pulse" />
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <span className="h-2 w-2 rounded-full bg-[#4F46E5] dark:bg-indigo-500 animate-pulse" />
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                     Interactive Stack Viewer
                   </span>
                 </div>
@@ -411,17 +411,17 @@ export function EventDetailModal({ event, onClose }: Props) {
                     type="checkbox"
                     checked={showInternalFrames}
                     onChange={(e) => setShowInternalFrames(e.target.checked)}
-                    className="h-3.5 w-3.5 rounded border-slate-300 text-[#4F46E5] focus:ring-[#4F46E5]/20"
+                    className="h-3.5 w-3.5 rounded border-slate-300 dark:border-slate-700 text-[#4F46E5] dark:text-indigo-500 focus:ring-[#4F46E5]/20 dark:focus:ring-indigo-500/20"
                   />
-                  <span className="text-xs font-semibold text-slate-500 select-none">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 select-none">
                     Show node_modules & internal frames
                   </span>
                 </label>
               </div>
 
-              <div className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div className="divide-y divide-slate-100 dark:divide-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm overflow-hidden">
                 {parsedFrames.filter(frame => frame.isApp || showInternalFrames).length === 0 ? (
-                  <div className="p-8 text-center text-slate-400 text-xs font-medium">
+                  <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs font-medium">
                     Only system/framework frames found. Turn on &ldquo;Show node_modules &amp; internal frames&rdquo; to view them.
                   </div>
                 ) : (
@@ -431,20 +431,20 @@ export function EventDetailModal({ event, onClose }: Props) {
 
                     return frame.isApp ? (
                       // Highlighted User/App Frame
-                      <div key={index} className="group relative flex items-start justify-between gap-4 bg-indigo-50/15 px-4 py-3 transition hover:bg-indigo-50/25">
+                      <div key={index} className="group relative flex items-start justify-between gap-4 bg-indigo-50/15 dark:bg-indigo-950/10 px-4 py-3 transition hover:bg-indigo-50/25 dark:hover:bg-indigo-950/20">
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 font-mono text-[9px] font-bold text-indigo-700 uppercase tracking-wide">
+                            <span className="rounded bg-indigo-50 dark:bg-indigo-950 border border-indigo-100 dark:border-indigo-900 px-1.5 py-0.5 font-mono text-[9px] font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">
                               Application Code
                             </span>
-                            <span className="font-mono text-xs font-bold text-indigo-950 break-all">
+                            <span className="font-mono text-xs font-bold text-indigo-950 dark:text-indigo-200 break-all">
                               {frame.functionName}
                             </span>
                           </div>
-                          <div className="mt-1.5 font-mono text-[11px] text-slate-600 break-all leading-normal flex flex-wrap items-center gap-1.5">
-                            <span className="text-slate-400">{frame.file}</span>
+                          <div className="mt-1.5 font-mono text-[11px] text-slate-600 dark:text-slate-400 break-all leading-normal flex flex-wrap items-center gap-1.5">
+                            <span className="text-slate-400 dark:text-slate-500">{frame.file}</span>
                             {frame.line !== undefined && (
-                              <span className="rounded border border-indigo-100 bg-indigo-50/60 px-1 py-0.5 text-[10px] font-bold text-indigo-700 tabular-nums">
+                              <span className="rounded border border-indigo-100 dark:border-indigo-900 bg-indigo-50/60 dark:bg-indigo-950/50 px-1 py-0.5 text-[10px] font-bold text-indigo-700 dark:text-indigo-400 tabular-nums">
                                 line {frame.line}:{frame.col}
                               </span>
                             )}
@@ -452,11 +452,11 @@ export function EventDetailModal({ event, onClose }: Props) {
                         </div>
                         <button
                           onClick={() => copyToClipboard(`${frame.file}:${frame.line ?? 1}:${frame.col ?? 1}`, `frame-${index}`)}
-                          className="shrink-0 rounded-lg border border-slate-200 bg-white p-1 text-slate-400 transition hover:border-slate-300 hover:text-[#4F46E5]"
+                          className="shrink-0 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1 text-slate-400 dark:text-slate-500 transition hover:border-slate-300 dark:hover:border-slate-700 hover:text-[#4F46E5] dark:hover:text-indigo-400"
                           title="Copy file path"
                         >
                           {copiedId === `frame-${index}` ? (
-                            <CheckIcon className="text-emerald-600" />
+                            <CheckIcon className="text-emerald-600 dark:text-emerald-400" />
                           ) : (
                             <CopyIcon />
                           )}
@@ -464,16 +464,16 @@ export function EventDetailModal({ event, onClose }: Props) {
                       </div>
                     ) : (
                       // Muted System/Framework Frame
-                      <div key={index} className="flex items-center justify-between gap-4 px-4 py-2 bg-slate-50/50 font-mono text-[11px]">
-                        <div className="min-w-0 truncate text-slate-400">
-                          <span className="text-slate-500 font-semibold">{frame.functionName}</span>
-                          <span className="mx-1.5 text-slate-300">|</span>
-                          <span className="text-slate-400" title={frame.file}>
+                      <div key={index} className="flex items-center justify-between gap-4 px-4 py-2 bg-slate-50/50 dark:bg-slate-900/30 font-mono text-[11px]">
+                        <div className="min-w-0 truncate text-slate-400 dark:text-slate-500">
+                          <span className="text-slate-500 dark:text-slate-400 font-semibold">{frame.functionName}</span>
+                          <span className="mx-1.5 text-slate-300 dark:text-slate-700">|</span>
+                          <span className="text-slate-400 dark:text-slate-500" title={frame.file}>
                             {frame.file?.split(/[/\\]/).pop() || frame.file || "internal"}
                             {frame.line !== undefined && `:${frame.line}`}
                           </span>
                         </div>
-                        <span className="shrink-0 text-[8px] uppercase font-bold text-slate-300 tracking-wider">
+                        <span className="shrink-0 text-[8px] uppercase font-bold text-slate-300 dark:text-slate-600 tracking-wider">
                           System Frame
                         </span>
                       </div>
@@ -488,36 +488,36 @@ export function EventDetailModal({ event, onClose }: Props) {
           {activeTab === "http" && (
             <div className="grid gap-5 sm:grid-cols-2">
               {/* Request Metadata */}
-              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-5 shadow-sm space-y-4">
+                <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2">
                   Request Metadata
                 </h4>
                 <dl className="space-y-3.5 text-xs">
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Method</dt>
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Method</dt>
                     <dd className="mt-1">
                       {requestContext.method ? (
                         <span className={`inline-flex rounded px-1.5 py-0.5 font-mono font-bold text-[10px] uppercase ${
-                          requestContext.method === "GET" ? "bg-emerald-50 text-emerald-700 border border-emerald-100" :
-                          requestContext.method === "POST" ? "bg-blue-50 text-blue-700 border border-blue-100" :
-                          "bg-amber-50 text-amber-700 border border-amber-100"
+                          requestContext.method === "GET" ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50" :
+                          requestContext.method === "POST" ? "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50" :
+                          "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-900/50"
                         }`}>
                           {requestContext.method}
                         </span>
                       ) : (
-                        <span className="text-slate-400 italic">UNKNOWN</span>
+                        <span className="text-slate-400 dark:text-slate-500 italic">UNKNOWN</span>
                       )}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Route</dt>
-                    <dd className="mt-1 font-mono text-slate-800 break-all select-all font-semibold bg-slate-50 px-2 py-1 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Route</dt>
+                    <dd className="mt-1 font-mono text-slate-800 dark:text-slate-200 break-all select-all font-semibold bg-slate-50 dark:bg-slate-900 px-2 py-1 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {requestContext.route || "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Full URL</dt>
-                    <dd className="mt-1 font-mono text-slate-600 break-all select-all text-[11px]">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Full URL</dt>
+                    <dd className="mt-1 font-mono text-slate-600 dark:text-slate-400 break-all select-all text-[11px]">
                       {requestContext.url || "—"}
                     </dd>
                   </div>
@@ -525,32 +525,32 @@ export function EventDetailModal({ event, onClose }: Props) {
               </div>
 
               {/* Client & System context */}
-              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-5 shadow-sm space-y-4">
+                <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2">
                   Client & System Context
                 </h4>
                 <dl className="space-y-3.5 text-xs">
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">IP Address</dt>
-                    <dd className="mt-1 font-mono font-semibold text-slate-700 select-all">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">IP Address</dt>
+                    <dd className="mt-1 font-mono font-semibold text-slate-700 dark:text-slate-300 select-all">
                       {requestContext.ip || "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">User ID</dt>
-                    <dd className="mt-1 font-mono font-semibold text-slate-700 select-all">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">User ID</dt>
+                    <dd className="mt-1 font-mono font-semibold text-slate-700 dark:text-slate-300 select-all">
                       {requestContext.userId || "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Cron name / watchdogs</dt>
-                    <dd className="mt-1 font-mono text-slate-700 select-all">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Cron name / watchdogs</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 select-all">
                       {requestContext.cron || "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Helper / Handler</dt>
-                    <dd className="mt-1 font-mono text-slate-700 select-all">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Helper / Handler</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 select-all">
                       {requestContext.helper || "—"}
                     </dd>
                   </div>
@@ -558,56 +558,56 @@ export function EventDetailModal({ event, onClose }: Props) {
               </div>
 
               {/* Metrics & Occurrences */}
-              <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
+              <div className="sm:col-span-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-5 shadow-sm space-y-4">
+                <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2">
                   Metrics & Occurrences
                 </h4>
                 <div className="grid gap-4 grid-cols-2 md:grid-cols-4 text-xs">
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Total Occurrences</dt>
-                    <dd className="mt-1 font-mono font-semibold text-slate-800 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Total Occurrences</dt>
+                    <dd className="mt-1 font-mono font-semibold text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {event.occurrences ?? event.occurrenceDetails?.occurrences ?? 1}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">First Seen</dt>
-                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">First Seen</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {event.occurrenceDetails?.firstSeen ? new Date(event.occurrenceDetails.firstSeen).toLocaleString() : "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Last Seen</dt>
-                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Last Seen</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {event.occurrenceDetails?.lastSeen ? new Date(event.occurrenceDetails.lastSeen).toLocaleString() : "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Span (Duration)</dt>
-                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Span (Duration)</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {event.occurrenceDetails?.spanMs ? `${(event.occurrenceDetails.spanMs / 1000).toFixed(1)}s` : "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Frequency (Day / Hour)</dt>
-                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Frequency (Day / Hour)</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {event.occurrenceDetails?.frequencyPerDay !== undefined ? `${event.occurrenceDetails.frequencyPerDay.toFixed(2)}/d` : "—"} · {event.occurrenceDetails?.frequencyPerHour !== undefined ? `${event.occurrenceDetails.frequencyPerHour.toFixed(2)}/h` : "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Affected IPs</dt>
-                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Affected IPs</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {event.affectedIpCount ?? "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Affected URLs</dt>
-                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Affected URLs</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {event.affectedUrlCount ?? "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-slate-400 uppercase tracking-wider text-[9px] font-bold">Multi-User Event</dt>
-                    <dd className="mt-1 font-mono text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded border border-slate-100/50">
+                    <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Multi-User Event</dt>
+                    <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
                       {event.multiUser !== undefined ? (event.multiUser ? "Yes" : "No") : "—"}
                     </dd>
                   </div>
@@ -615,11 +615,11 @@ export function EventDetailModal({ event, onClose }: Props) {
               </div>
 
               {/* User Agent */}
-              <div className="sm:col-span-2 rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-2">
+              <div className="sm:col-span-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-5 shadow-sm space-y-3">
+                <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider border-b border-slate-100 dark:border-slate-800 pb-2">
                   User Agent String
                 </h4>
-                <p className="font-mono text-xs text-slate-600 break-all leading-normal bg-slate-50/50 p-2.5 rounded border border-slate-100/50 shadow-inner">
+                <p className="font-mono text-xs text-slate-600 dark:text-slate-400 break-all leading-normal bg-slate-50/50 dark:bg-slate-900/50 p-2.5 rounded border border-slate-100/50 dark:border-slate-800/50 shadow-inner">
                   {requestContext.userAgent || "—"}
                 </p>
               </div>
@@ -630,63 +630,63 @@ export function EventDetailModal({ event, onClose }: Props) {
           {activeTab === "payloads" && (
             <div className="space-y-5">
               {!requestContext.hasPayloads ? (
-                <div className="rounded-xl border border-dashed border-slate-200 bg-white py-12 text-center text-slate-400 text-xs font-semibold">
+                <div className="rounded-xl border border-dashed border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-12 text-center text-slate-400 dark:text-slate-500 text-xs font-semibold">
                   No query, parameters, or body payloads are available for this event.
                 </div>
               ) : (
                 <>
                   {requestContext.params && Object.keys(requestContext.params).length > 0 && (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-2.5">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 shadow-sm space-y-2.5">
+                      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1.5">
+                        <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                           Route Parameters
                         </h4>
                         <button
                           onClick={() => copyToClipboard(JSON.stringify(requestContext.params, null, 2), "params-copy")}
-                          className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-100"
+                          className="rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800"
                         >
                           {copiedId === "params-copy" ? "Copied" : "Copy"}
                         </button>
                       </div>
-                      <pre className="overflow-auto rounded-lg border border-slate-100 bg-slate-900 p-4.5 font-mono text-xs leading-relaxed text-slate-300 max-h-56 shadow-inner">
+                      <pre className="overflow-auto rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 p-4.5 font-mono text-xs leading-relaxed text-slate-300 dark:text-slate-400 max-h-56 shadow-inner">
                         {JSON.stringify(requestContext.params, null, 2)}
                       </pre>
                     </div>
                   )}
 
                   {requestContext.query && Object.keys(requestContext.query).length > 0 && (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-2.5">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 shadow-sm space-y-2.5">
+                      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1.5">
+                        <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                           Query String Object
                         </h4>
                         <button
                           onClick={() => copyToClipboard(JSON.stringify(requestContext.query, null, 2), "query-copy")}
-                          className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-100"
+                          className="rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800"
                         >
                           {copiedId === "query-copy" ? "Copied" : "Copy"}
                         </button>
                       </div>
-                      <pre className="overflow-auto rounded-lg border border-slate-100 bg-slate-900 p-4.5 font-mono text-xs leading-relaxed text-slate-300 max-h-56 shadow-inner">
+                      <pre className="overflow-auto rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 p-4.5 font-mono text-xs leading-relaxed text-slate-300 dark:text-slate-400 max-h-56 shadow-inner">
                         {JSON.stringify(requestContext.query, null, 2)}
                       </pre>
                     </div>
                   )}
 
                   {requestContext.body && Object.keys(requestContext.body).length > 0 && (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm space-y-2.5">
-                      <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
-                        <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-4 shadow-sm space-y-2.5">
+                      <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-1.5">
+                        <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                           POST/PUT HTTP Body Payload
                         </h4>
                         <button
                           onClick={() => copyToClipboard(JSON.stringify(requestContext.body, null, 2), "body-copy")}
-                          className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-100"
+                          className="rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800"
                         >
                           {copiedId === "body-copy" ? "Copied" : "Copy"}
                         </button>
                       </div>
-                      <pre className="overflow-auto rounded-lg border border-slate-100 bg-slate-900 p-4.5 font-mono text-xs leading-relaxed text-slate-300 max-h-72 shadow-inner">
+                      <pre className="overflow-auto rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 p-4.5 font-mono text-xs leading-relaxed text-slate-300 dark:text-slate-400 max-h-72 shadow-inner">
                         {JSON.stringify(requestContext.body, null, 2)}
                       </pre>
                     </div>
@@ -698,19 +698,19 @@ export function EventDetailModal({ event, onClose }: Props) {
 
           {/* 4. RAW EVENT TAB */}
           {activeTab === "raw" && (
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-3.5">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-5 shadow-sm space-y-3.5">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h4 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Raw Event JSON Payload
                 </h4>
                 <button
                   onClick={() => copyToClipboard(JSON.stringify(event, null, 2), "raw-copy")}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-100"
                 >
                   {copiedId === "raw-copy" ? (
                     <>
-                      <CheckIcon className="text-emerald-600" />
-                      <span className="text-emerald-700 font-bold">Copied JSON</span>
+                      <CheckIcon className="text-emerald-600 dark:text-emerald-400" />
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold">Copied JSON</span>
                     </>
                   ) : (
                     <>
@@ -720,7 +720,7 @@ export function EventDetailModal({ event, onClose }: Props) {
                   )}
                 </button>
               </div>
-              <pre className="overflow-auto rounded-xl border border-slate-200 bg-slate-900 p-4.5 font-mono text-[11px] leading-relaxed text-slate-300 max-h-[26rem] shadow-inner">
+              <pre className="overflow-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 p-4.5 font-mono text-[11px] leading-relaxed text-slate-300 dark:text-slate-400 max-h-[26rem] shadow-inner">
                 {JSON.stringify(event, null, 2)}
               </pre>
             </div>
