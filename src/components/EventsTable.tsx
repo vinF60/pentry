@@ -399,7 +399,7 @@ export function EventsTable({
                             <div className="min-w-0 flex flex-col">
                               <div className="flex justify-between items-center">
                                 <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Stack Trace snippet</h4>
-                                <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500">Click "Details" for full trace</span>
+                                <span className="text-[9px] font-medium text-slate-400 dark:text-slate-500">Click &ldquo;Details&rdquo; for full trace</span>
                               </div>
                               <pre className="mt-2.5 flex-1 overflow-auto rounded-xl border border-slate-200/60 dark:border-slate-700/40 bg-slate-900 dark:bg-slate-950 p-3 font-mono text-[10px] leading-relaxed text-slate-300 max-h-36 shadow-inner">
                                 {ev.stack ? ev.stack : ev.data?.extra ? JSON.stringify(ev.data?.extra, null, 2) : "No stack trace available for this log."}

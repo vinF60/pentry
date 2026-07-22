@@ -109,10 +109,10 @@ export function HeaderBar({
             <h1 className="sr-only">PipexAI — Error Inbox</h1>
             <div className="relative h-10 w-[180px] shrink-0 sm:h-12 sm:w-[220px]">
               <Image
-                src="/pipex-ai-logo.png"
+                src={theme === "dark" ? "/logo-dark.png" : "/logo.png"}
                 alt="Pipex.ai Logo"
                 fill
-                className="object-contain object-left dark:brightness-0 dark:invert"
+                className="object-contain object-left"
                 sizes="(max-width: 640px) 180px, 220px"
                 priority
               />
