@@ -590,7 +590,7 @@ export function EventDetailModal({ event, onClose }: Props) {
                   <div>
                     <dt className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-[9px] font-bold">Frequency (Day / Hour)</dt>
                     <dd className="mt-1 font-mono text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 px-2.5 py-1.5 rounded border border-slate-100/50 dark:border-slate-800/50">
-                      {event.occurrenceDetails?.frequencyPerDay !== undefined ? `${event.occurrenceDetails.frequencyPerDay.toFixed(2)}/d` : "—"} · {event.occurrenceDetails?.frequencyPerHour !== undefined ? `${event.occurrenceDetails.frequencyPerHour.toFixed(2)}/h` : "—"}
+                      {typeof event.occurrenceDetails?.frequencyPerDay === "number" ? `${event.occurrenceDetails.frequencyPerDay.toFixed(2)}/d` : "—"} · {typeof event.occurrenceDetails?.frequencyPerHour === "number" ? `${event.occurrenceDetails.frequencyPerHour.toFixed(2)}/h` : "—"}
                     </dd>
                   </div>
                   <div>
