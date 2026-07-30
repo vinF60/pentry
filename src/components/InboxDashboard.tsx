@@ -91,14 +91,18 @@ export function InboxDashboard() {
   const [view, setView] = useState<
     "loading" | "table" | "empty" | "error" | "config"
   >("loading");
-  const [selectedEvent, setSelectedEvent] = useState<InboxEvent | null>(null);
+  const [resolveMessage, setResolveMessage] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [selectedEvent, setSelectedEvent] = useState<InboxEvent | null>(null);
   const initialEnv = (searchParams?.get("env") as "dev" | DisplayRole) ?? "dev";
   const initialError =
     (searchParams?.get("type") as ErrorType) ?? ErrorType.all;
+  const initialResolved =
+    (searchParams?.get("resolved") as "all" | "resolved" | "unresolved") ?? "all";
   const [roleFilter, setRoleFilter] = useState<"all" | DisplayRole>(initialEnv);
   const [errorType, setErrorType] = useState<ErrorType>(initialError);
+  const [resolvedFilter, setResolvedFilter] = useState<"all" | "resolved" | "unresolved">(initialResolved);
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
 
   // Sync filter state to URL query parameters
@@ -106,8 +110,9 @@ export function InboxDashboard() {
     const params = new URLSearchParams();
     if (roleFilter) params.set("env", roleFilter as string);
     if (errorType) params.set("type", errorType as string);
+    if (resolvedFilter !== "all") params.set("resolved", resolvedFilter);
     router.replace(`?${params.toString()}`, { scroll: false });
-  }, [roleFilter, errorType, router]);
+  }, [roleFilter, errorType, resolvedFilter, router]);
   const [refreshing, setRefreshing] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -182,6 +187,9 @@ export function InboxDashboard() {
         if (errorType !== ErrorType.all) {
           qs.set("type", errorType);
         }
+        if (resolvedFilter !== "all") {
+          qs.set("resolved", resolvedFilter === "resolved" ? "true" : "false");
+        }
         // IMPORTANT: we do NOT send `environment` here.
         // The Dev/Stage/Prod tab selects which backend (and therefore which DB) we query.
         // Sending `environment` would apply additional server-side filtering and hide errors.
@@ -229,7 +237,7 @@ export function InboxDashboard() {
         if (!silent) setView("error");
       }
     },
-    [debouncedSearch, roleFilter, errorType, paginationData],
+    [debouncedSearch, roleFilter, errorType, resolvedFilter, paginationData],
   );
 
   useEffect(() => {
@@ -339,10 +347,50 @@ export function InboxDashboard() {
     }
   };
 
+  const handleResolveToggle = async (id: string, currentResolved: boolean) => {
+    if (currentResolved) {
+      // Show warning that can't undo
+      alert('This event is already resolved and cannot be undone.');
+      return;
+    }
+    const base = getApiBaseForRole(roleFilter);
+    if (!base) return;
+    try {
+      const headers: HeadersInit = {};
+      const apiKey = getDashboardApiKey();
+      if (apiKey) headers['X-API-Key'] = apiKey;
+      // Confirm before marking as resolved to avoid accidental actions
+      const confirmed = window.confirm('Are you sure you want to mark this event as resolved? This action cannot be undone.');
+      if (!confirmed) return;
+
+      const r = await fetch(`${base.replace(/\/$/, '')}/api/events/${id}/resolve?group=true`, {
+        method: 'PATCH',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolved: true }),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      // Optimistically update UI
+      setEvents(prev =>
+        prev.map(ev => (ev._id === id ? { ...ev, resolved: true, resolvedAt: new Date().toISOString() } : ev)),
+      );
+      // Show banner
+      setResolveMessage('Event resolved – this action cannot be undone.');
+    } catch (e) {
+      setStatus(`Resolve failed: ${e instanceof Error ? e.message : String(e)}`);
+      setStatusError(true);
+    }
+  };
+
   const showMain = view === "table" || view === "empty" || view === "loading";
 
   return (
     <div className="min-h-screen font-sans text-slate-900 antialiased">
+      {resolveMessage && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 bg-amber-600 text-white px-4 py-2 rounded shadow-lg animate-bounce">
+          {resolveMessage}
+          <button onClick={() => setResolveMessage(null)} className="ml-2 text-sm underline">Dismiss</button>
+        </div>
+      )}
       <HeaderBar
         onRefresh={handleRefresh}
         onClearAll={handleClearAll}
@@ -409,7 +457,7 @@ export function InboxDashboard() {
                 events={events}
                 allEventsCount={matchTotal}
                 hasActiveQuery={
-                  debouncedSearch.length > 0 || roleFilter !== "all"
+                  debouncedSearch.length > 0 || roleFilter !== "all" || resolvedFilter !== "all"
                 }
                 onDetail={setSelectedEvent}
                 onDelete={handleDelete}
@@ -419,6 +467,9 @@ export function InboxDashboard() {
                 onSearchChange={setSearchInput}
                 severityFilter={severityFilter}
                 onSeverityFilter={setSeverityFilter}
+                resolvedFilter={resolvedFilter}
+                onResolvedFilter={setResolvedFilter}
+                onResolveToggle={handleResolveToggle}
                 loading={view === "loading"}
                 paginationData={paginationData}
                 setPaginationData={setPaginationData}
@@ -431,6 +482,7 @@ export function InboxDashboard() {
       <EventDetailModal
         event={selectedEvent}
         onClose={() => setSelectedEvent(null)}
+        onResolveToggle={handleResolveToggle}
       />
     </div>
   );

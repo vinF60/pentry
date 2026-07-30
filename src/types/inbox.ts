@@ -3,6 +3,8 @@ export type InboxEvent = {
   createdAt: string;
   updatedAt?: string;
   message: string;
+  resolved?: boolean;
+  resolvedAt?: string | null;
   stack: string | null;
   url: string | null;
   method?: string | null;
@@ -10,6 +12,7 @@ export type InboxEvent = {
   isOperational?: boolean | null;
   service?: string | null;
   occurrences?: number;
+  issueNumber?: number;
   affectedIpCount?: number | null;
   affectedUrlCount?: number | null;
   multiUser?: boolean | null;

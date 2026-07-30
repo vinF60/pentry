@@ -7,6 +7,7 @@ import { deriveSeverity, getDisplayRole } from "@/lib/inboxUi";
 type Props = {
   event: InboxEvent | null;
   onClose: () => void;
+  onResolveToggle: (id: string, currentResolved: boolean) => void;
 };
 
 type StackFrame = {
@@ -132,7 +133,25 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
-export function EventDetailModal({ event, onClose }: Props) {
+function ResolvedBadge({ resolved }: { resolved?: boolean }) {
+  if (resolved) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 dark:bg-emerald-500/20 text-white dark:text-emerald-400 border border-emerald-600 dark:border-emerald-500/30 px-2.5 py-0.5 font-mono text-[9px] font-extrabold shadow-sm tracking-wider animate-pulse">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        RESOLVED
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 dark:bg-amber-500/20 text-white dark:text-amber-400 border border-amber-500 dark:border-amber-500/30 px-2.5 py-0.5 font-mono text-[9px] font-extrabold shadow-sm tracking-wider animate-pulse">
+      UNRESOLVED
+    </span>
+  );
+}
+
+export function EventDetailModal({ event, onClose, onResolveToggle }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const [activeTab, setActiveTab] = useState<"stack" | "http" | "payloads" | "raw">("stack");
   const [showInternalFrames, setShowInternalFrames] = useState(false);
@@ -288,16 +307,45 @@ export function EventDetailModal({ event, onClose }: Props) {
               }`}>
                 {environment}
               </span>
+              <ResolvedBadge resolved={event.resolved} />
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 text-lg leading-none text-slate-400 dark:text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-700 dark:hover:text-slate-200 active:scale-90"
-            aria-label="Close"
-          >
-            ×
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => onResolveToggle(event._id, !!event.resolved)}
+              className={`inline-flex h-8 items-center justify-center gap-1.5 rounded-xl border px-3 text-xs font-bold transition-all shadow-sm active:scale-95 ${
+                event.resolved
+                  ? "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/60"
+                  : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-750 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+              }`}
+            >
+              {event.resolved ? (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>Resolved</span>
+                </>
+              ) : (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  <span>Resolve</span>
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 text-lg leading-none text-slate-400 dark:text-slate-500 transition hover:bg-slate-100 dark:hover:bg-slate-900 hover:text-slate-700 dark:hover:text-slate-200 active:scale-90"
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </div>
         </header>
 
         {/* --- ERROR MESSAGE BANNER --- */}

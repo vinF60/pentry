@@ -84,6 +84,24 @@ function EnvBadge({ role }: { role: DisplayRole }) {
   );
 }
 
+function ResolvedBadge({ resolved }: { resolved?: boolean }) {
+  if (resolved) {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 dark:bg-emerald-500/20 text-white dark:text-emerald-400 border border-emerald-600 dark:border-emerald-500/30 px-2.5 py-0.5 font-mono text-[9px] font-extrabold shadow-sm tracking-wider animate-pulse">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        RESOLVED
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 dark:bg-amber-500/20 text-white dark:text-amber-400 border border-amber-500 dark:border-amber-500/30 px-2.5 py-0.5 font-mono text-[9px] font-extrabold shadow-sm tracking-wider animate-pulse">
+      UNRESOLVED
+    </span>
+  );
+}
+
 type Props = {
   events: InboxEvent[];
   allEventsCount: number;
@@ -97,6 +115,9 @@ type Props = {
   onSearchChange: (v: string) => void;
   severityFilter: SeverityFilter;
   onSeverityFilter: (v: SeverityFilter) => void;
+  resolvedFilter: "all" | "resolved" | "unresolved";
+  onResolvedFilter: (v: "all" | "resolved" | "unresolved") => void;
+  onResolveToggle: (id: string, currentResolved: boolean) => void;
   loading?: boolean;
   paginationData: PaginationData;
   setPaginationData: React.Dispatch<React.SetStateAction<PaginationData>>;
@@ -114,6 +135,9 @@ export function EventsTable({
   onSearchChange,
   severityFilter,
   onSeverityFilter,
+  resolvedFilter,
+  onResolvedFilter,
+  onResolveToggle,
   loading,
   paginationData,
   setPaginationData,
@@ -181,6 +205,20 @@ export function EventsTable({
             </select>
           </div>
 
+          {/* Status Dropdown */}
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Status</span>
+            <select
+              value={resolvedFilter}
+              onChange={(e) => onResolvedFilter(e.target.value as "all" | "resolved" | "unresolved")}
+              className="h-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800 px-3 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm outline-none transition duration-150 ease-in-out hover:border-slate-300 dark:hover:border-slate-600 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/15"
+            >
+              <option value="all">All Statuses</option>
+              <option value="unresolved">Unresolved Only</option>
+              <option value="resolved">Resolved Only</option>
+            </select>
+          </div>
+
           {/* Search Input */}
           <label className="relative block w-full min-w-0 lg:max-w-md">
             <span className="sr-only">Search events ({scopeLabel})</span>
@@ -204,6 +242,7 @@ export function EventsTable({
       <div className="overflow-x-auto">
         <table className="w-full min-w-[800px] table-fixed border-separate border-spacing-0">
           <colgroup>
+            <col style={{ width: "5%" }} />
             <col style={{ width: "44%" }} />
             <col style={{ width: "12%" }} />
             <col style={{ width: "11%" }} />
@@ -213,7 +252,7 @@ export function EventsTable({
           </colgroup>
           <thead>
             <tr className="bg-slate-50/50 dark:bg-slate-900/40">
-              {[{ label: "Issue Details", align: "text-left pl-6" }, { label: "Last Seen", align: "text-left" }, { label: "Events", align: "text-center" }, { label: "Frequency", align: "text-center" }, { label: "Users Affected", align: "text-center" }, { label: "Actions", align: "text-right pr-6" }].map((th, i) => (
+              {[{ label: "Serial", align: "text-center" }, { label: "Issue Details", align: "text-left pl-6" }, { label: "Last Seen", align: "text-left" }, { label: "Events", align: "text-center" }, { label: "Frequency", align: "text-center" }, { label: "Users Affected", align: "text-center" }, { label: "Actions", align: "text-right pr-6" }].map((th, i) => (
                 <th
                   key={i}
                   scope="col"
@@ -244,12 +283,12 @@ export function EventsTable({
               ))
             ) : visibleEvents.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-16 text-center text-slate-500 dark:text-slate-400 text-sm font-medium">
+                <td colSpan={7} className="px-6 py-16 text-center text-slate-500 dark:text-slate-400 text-sm font-medium">
                   {hasActiveQuery ? "No events found matching the environment filter or search query." : "No events recorded in this database."}
                 </td>
               </tr>
             ) : (
-              visibleEvents.map((ev) => {
+              visibleEvents.map((ev, idx) => {
                 const where = whereFrom(ev);
                 const severity = deriveSeverity(ev);
                 const env = roleFilter === "all" ? getDisplayRole(ev) : roleFilter;
@@ -288,6 +327,7 @@ export function EventsTable({
                       onClick={() => setExpandedId((cur) => (cur === ev._id ? null : ev._id))}
                     >
                       {/* Issue Details */}
+                      <td className="px-3 text-center align-top"><span className="inline-block rounded-md bg-slate-50 dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 px-2.5 py-1 font-mono text-xs font-bold text-slate-700 dark:text-slate-300 tabular-nums">{ev.issueNumber ?? (idx + 1).toString()}</span></td>
                       <td className="min-w-0 pl-6 pr-3 align-top">
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-start gap-2 min-w-0">
@@ -307,6 +347,7 @@ export function EventsTable({
                             )}
                             <EnvBadge role={env} />
                             <SeverityBadge severity={severity} />
+                            <ResolvedBadge resolved={ev.resolved} />
                             <span className="max-w-[200px] sm:max-w-[300px] truncate font-mono text-[10px] text-slate-400 dark:text-slate-500" title={where}>
                               {where}
                             </span>
@@ -342,9 +383,30 @@ export function EventsTable({
                         )}
                       </td>
 
-                      {/* Actions */}
+                       {/* Actions */}
                       <td className="whitespace-nowrap pl-3 pr-6 align-middle text-right">
                         <div className="inline-flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                          <button
+                            type="button"
+                            onClick={() => onResolveToggle(ev._id, !!ev.resolved)}
+                            className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border shadow-sm transition active:scale-95 ${
+                              ev.resolved
+                                ? "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 hover:border-emerald-300"
+                                : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700"
+                            }`}
+                            title={ev.resolved ? "Mark as unresolved" : "Mark as resolved"}
+                          >
+                            {ev.resolved ? (
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            ) : (
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                              </svg>
+                            )}
+                          </button>
                           <button
                             type="button"
                             onClick={() => onDetail(ev)}
@@ -369,7 +431,7 @@ export function EventsTable({
                     {/* Expandable Details */}
                     {expanded && (
                       <tr id={`row-${ev._id}`} className="bg-slate-50/25 dark:bg-slate-800/20">
-                        <td colSpan={6} className="px-6 pb-4 pt-2">
+                        <td colSpan={7} className="px-6 pb-4 pt-2">
                           <div className="grid gap-4 rounded-xl border border-slate-200/50 dark:border-slate-700/50 bg-white dark:bg-slate-800/60 p-4 shadow-sm sm:grid-cols-2">
                             <div className="min-w-0">
                               <h4 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Context details</h4>
