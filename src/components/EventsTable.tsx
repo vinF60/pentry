@@ -252,7 +252,7 @@ export function EventsTable({
           </colgroup>
           <thead>
             <tr className="bg-slate-50/50 dark:bg-slate-900/40">
-              {[{ label: "Serial", align: "text-center" }, { label: "Issue Details", align: "text-left pl-6" }, { label: "Last Seen", align: "text-left" }, { label: "Events", align: "text-center" }, { label: "Frequency", align: "text-center" }, { label: "Users Affected", align: "text-center" }, { label: "Actions", align: "text-right pr-6" }].map((th, i) => (
+              {[{ label: "Issue", align: "text-center" }, { label: "Issue Details", align: "text-left pl-6" }, { label: "Last Seen", align: "text-left" }, { label: "Events", align: "text-center" }, { label: "Frequency", align: "text-center" }, { label: "Users Affected", align: "text-center" }, { label: "Actions", align: "text-right pr-6" }].map((th, i) => (
                 <th
                   key={i}
                   scope="col"
