@@ -16,8 +16,8 @@ export type InboxEvent = {
   affectedIpCount?: number | null;
   affectedUrlCount?: number | null;
   multiUser?: boolean | null;
-  type?  : any;
-  severity?   : any;
+  type?: ErrorType;
+  severity?: ErrorSeverity;
   data?: {
     source?: string;
     route?: string | null;
@@ -59,4 +59,11 @@ export enum ErrorType {
   all = "all",
   caught = "caught",
   uncaught = "uncaught",
+}
+
+export enum ErrorSeverity {
+  low = "low",
+  medium = "medium",
+  high = "high",
+  critical = "critical",
 }

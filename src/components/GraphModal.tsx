@@ -27,7 +27,7 @@ export function GraphModal({ events, onClose }: { events: InboxEvent[]; onClose:
   const eventCountByDate = useMemo(() => {
     const map = new Map<string, number>();
     events.forEach((e) => {
-      const date = new Date(e.createdAt).toISOString().split('T')[0];
+      const date = new Date(e.createdAt)?.toISOString()?.split('T')[0];
       map.set(date, (map.get(date) ?? 0) + 1);
     });
     const arr = Array.from(map.entries()).map(([date, count]) => ({ date, count }));
