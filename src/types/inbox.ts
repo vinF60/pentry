@@ -16,8 +16,8 @@ export type InboxEvent = {
   affectedIpCount?: number | null;
   affectedUrlCount?: number | null;
   multiUser?: boolean | null;
-  type?  : any;
-  severity?   : any;
+  type?: string;
+  severity?: string;
   data?: {
     source?: string;
     route?: string | null;
