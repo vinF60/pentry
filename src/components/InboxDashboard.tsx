@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EventDetailModal } from "./EventDetailModal";
 import { EventsTable } from "./EventsTable";
 import { HeaderBar } from "./HeaderBar";
+import { GraphModal } from "./GraphModal";
 import { KpiStrip } from "./KpiStrip";
 
 type SeverityFilter = "all" | "info" | "warning" | "critical";
@@ -104,6 +105,7 @@ export function InboxDashboard() {
   const [errorType, setErrorType] = useState<ErrorType>(initialError);
   const [resolvedFilter, setResolvedFilter] = useState<"all" | "resolved" | "unresolved">(initialResolved);
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>("all");
+  const [showGraphModal, setShowGraphModal] = useState(false);
 
   // Sync filter state to URL query parameters
   useEffect(() => {
@@ -400,7 +402,9 @@ export function InboxDashboard() {
         onAddDemo={handleInjectDemoEvents}
         setErrorType={setErrorType}
         errorType={errorType}
+        onExpand={() => setShowGraphModal(true)}
       />
+{showGraphModal && <GraphModal events={events} onClose={() => setShowGraphModal(false)} />}
 
       <div className="mx-auto w-full max-w-[1600px] space-y-5 px-4 py-5 sm:space-y-6 sm:px-6 sm:py-6">
         {showMain && (

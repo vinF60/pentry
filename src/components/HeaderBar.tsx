@@ -27,6 +27,7 @@ type Props = {
   onAddDemo: () => void;
   setErrorType: (e: ErrorType) => void;
   errorType: ErrorType;
+  onExpand?: () => void; // optional prop for expand button
 };
 
 const filters = [
@@ -97,6 +98,7 @@ export function HeaderBar({
   onAddDemo,
   setErrorType,
   errorType,
+  onExpand = () => {},
 }: Props) {
   const { theme, toggle } = useTheme();
 
@@ -161,6 +163,17 @@ export function HeaderBar({
                 ↻
               </span>
               <span>{refreshing ? "Refreshing…" : "Refresh"}</span>
+            </button>
+
+            {/* Expand Button */}
+            <button
+              type="button"
+              onClick={onExpand}
+              title="Show charts"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95"
+            >
+              <span aria-hidden>📊</span>
+              <span>Expand</span>
             </button>
 
             {/* Error Type Segment Filter */}
